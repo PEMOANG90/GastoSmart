@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>GastoSmart 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root{--bg:#0d0f1a;--surface:#13162b;--surface2:#1a1e35;--surface3:#212640;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f0f2ff;--muted:#7b82a8;--muted2:#4a5080;--accent:#7c6fff;--accent2:#a78bfa;--green:#34d399;--red:#f87171;--amber:#fbbf24;--pink:#f472b6;--cyan:#22d3ee;--r:16px;--rs:10px;--transition:.25s cubic-bezier(.4,0,.2,1)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -151,6 +152,12 @@ tbody tr:hover td{background:var(--surface2)}
 </style>
 </head>
 <body>
+<!-- EDGE WARNING BANNER -->
+<div id="edgeBanner" style="display:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:12px 20px;text-align:center;font-size:13px;font-weight:600;position:fixed;top:0;left:0;right:0;z-index:1000;line-height:1.5">
+  ⚠️ Para la mejor experiencia usa <strong>Google Chrome</strong> —
+  <a href="https://www.google.com/chrome/" target="_blank" style="color:#fff;text-decoration:underline">Descargar gratis</a>
+  <button onclick="document.getElementById('edgeBanner').style.display='none'" style="background:rgba(255,255,255,.3);border:none;color:#fff;padding:3px 10px;border-radius:6px;cursor:pointer;margin-left:12px;font-weight:700">✕ Cerrar</button>
+</div>
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
@@ -218,7 +225,7 @@ tbody tr:hover td{background:var(--surface2)}
     <button class="nav-item" data-page="premium"><span class="nav-icon">⭐</span>Premium<span class="badge-premium">PRO</span></button>
     <button class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>Ajustes</button>
   </aside>
-  <main class="main" id="mainContent"><div class="loading"><div class="spinner"></div>Cargando...</div></main>
+  <main class="main" id="mainContent"><div class="loading" id="loadingDiv"><div class="spinner"></div><span id="loadingMsg">Conectando...</span></div></main>
 </div>
 
 <nav class="mobile-nav" id="mobileNav" style="display:none">
@@ -387,37 +394,50 @@ async function signOut(){
 // SESSION LISTENER
 // ══════════════════════════════════════
 
-// Timeout: si en 6 segundos no hay respuesta, mostrar login
-const authTimeout = setTimeout(()=>{
-  if(!currentUser){
-    document.getElementById('authScreen').style.display='flex';
-    document.getElementById('appNav').style.display='none';
-    document.getElementById('appLayout').style.display='none';
-    document.getElementById('mobileNav').style.display='none';
-  }
-}, 6000);
+// Inicialización robusta — funciona en Edge, Chrome, Firefox y Safari
+function showAuth(){
+  document.getElementById('authScreen').style.display='flex';
+  document.getElementById('appNav').style.display='none';
+  document.getElementById('appLayout').style.display='none';
+  document.getElementById('mobileNav').style.display='none';
+}
 
+async function startApp(){
+  // Mostrar login inmediatamente mientras verificamos sesión
+  // Esto evita el "Cargando..." infinito en cualquier navegador
+  showAuth();
+  
+  try {
+    const sessionPromise = sb.auth.getSession();
+    const timeoutPromise = new Promise((_,reject) => setTimeout(() => reject(new Error('timeout')), 4000));
+    const {data:{session}} = await Promise.race([sessionPromise, timeoutPromise]);
+    
+    if(session?.user){
+      currentUser = session.user;
+      await initApp();
+    }
+    // Si no hay sesión, ya mostramos el login arriba
+  } catch(e) {
+    // Edge bloqueó Supabase — el usuario ya ve el login, puede entrar normalmente
+    console.log('Modo compatibilidad activado:', e.message);
+  }
+}
+
+// Escuchar cambios de sesión (login/logout)
 sb.auth.onAuthStateChange(async(event,session)=>{
-  clearTimeout(authTimeout);
-  if(session?.user){
-    currentUser=session.user;
-    await initApp();
-  } else {
-    document.getElementById('authScreen').style.display='flex';
-    document.getElementById('appNav').style.display='none';
-    document.getElementById('appLayout').style.display='none';
-    document.getElementById('mobileNav').style.display='none';
+  if(event === 'SIGNED_IN' && session?.user){
+    currentUser = session.user;
+    if(document.getElementById('authScreen').style.display !== 'none'){
+      await initApp();
+    }
+  } else if(event === 'SIGNED_OUT'){
+    currentUser = null;
+    showAuth();
   }
 });
 
-// Verificar sesion activa inmediatamente (fix para Edge)
-sb.auth.getSession().then(({data:{session}})=>{
-  if(session?.user && !currentUser){
-    clearTimeout(authTimeout);
-    currentUser=session.user;
-    initApp();
-  }
-});
+// Arrancar la app
+startApp();
 
 async function initApp(){
   document.getElementById('authScreen').style.display='none';
@@ -794,6 +814,13 @@ document.addEventListener('click',()=>document.getElementById('avatarMenu').clas
 // NAV
 // ══════════════════════════════════════
 document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>navigate(el.dataset.page)));
+
+// Detectar Edge con prevención de seguimiento y mostrar banner
+const isEdge = navigator.userAgent.includes('Edg/');
+if(isEdge){
+  document.getElementById('edgeBanner').style.display='block';
+  document.getElementById('appNav') && (document.getElementById('appNav').style.marginTop='44px');
+}
 </script>
 </body>
 </html>
