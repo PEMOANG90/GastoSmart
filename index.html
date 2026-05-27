@@ -272,7 +272,16 @@ tbody tr:hover td{background:var(--surface2)}
 // ══════════════════════════════════════
 const SUPABASE_URL = 'https://ekoojdgqizzdbcqkxgln.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb29qZGdxaXp6ZGJjcWt4Z2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTAwMjksImV4cCI6MjA5NTQ4NjAyOX0.Ya1IqJuccG7D0nEfFeZ1ZXBSAWAyzIHhDYkfutZpkzI';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    storage: window.localStorage,
+    storageKey: 'gastosmart_auth',
+    flowType: 'implicit',
+    detectSessionInUrl: true,
+    persistSession: true,
+    autoRefreshToken: true
+  }
+});
 
 // ══════════════════════════════════════
 // STATE
