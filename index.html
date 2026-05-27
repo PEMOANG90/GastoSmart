@@ -272,9 +272,27 @@ tbody tr:hover td{background:var(--surface2)}
 // ══════════════════════════════════════
 const SUPABASE_URL = 'https://ekoojdgqizzdbcqkxgln.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb29qZGdxaXp6ZGJjcWt4Z2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTAwMjksImV4cCI6MjA5NTQ4NjAyOX0.Ya1IqJuccG7D0nEfFeZ1ZXBSAWAyzIHhDYkfutZpkzI';
+// Almacenamiento que funciona en Edge, Chrome, Safari y Firefox
+// sin importar la configuración de privacidad del navegador
+const safeStorage = (() => {
+  try {
+    localStorage.setItem('gs_test', '1');
+    localStorage.removeItem('gs_test');
+    return localStorage;
+  } catch(e) {
+    // Si localStorage está bloqueado, usamos memoria (sesión temporal)
+    const store = {};
+    return {
+      getItem: k => store[k] || null,
+      setItem: (k, v) => { store[k] = v; },
+      removeItem: k => { delete store[k]; }
+    };
+  }
+})();
+
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
-    storage: window.localStorage,
+    storage: safeStorage,
     storageKey: 'gastosmart_auth',
     flowType: 'implicit',
     detectSessionInUrl: true,
