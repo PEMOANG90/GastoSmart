@@ -386,7 +386,19 @@ async function signOut(){
 // ══════════════════════════════════════
 // SESSION LISTENER
 // ══════════════════════════════════════
+
+// Timeout: si en 6 segundos no hay respuesta, mostrar login
+const authTimeout = setTimeout(()=>{
+  if(!currentUser){
+    document.getElementById('authScreen').style.display='flex';
+    document.getElementById('appNav').style.display='none';
+    document.getElementById('appLayout').style.display='none';
+    document.getElementById('mobileNav').style.display='none';
+  }
+}, 6000);
+
 sb.auth.onAuthStateChange(async(event,session)=>{
+  clearTimeout(authTimeout);
   if(session?.user){
     currentUser=session.user;
     await initApp();
@@ -395,6 +407,15 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     document.getElementById('appNav').style.display='none';
     document.getElementById('appLayout').style.display='none';
     document.getElementById('mobileNav').style.display='none';
+  }
+});
+
+// Verificar sesion activa inmediatamente (fix para Edge)
+sb.auth.getSession().then(({data:{session}})=>{
+  if(session?.user && !currentUser){
+    clearTimeout(authTimeout);
+    currentUser=session.user;
+    initApp();
   }
 });
 
