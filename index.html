@@ -46,9 +46,18 @@ nav{position:sticky;top:0;z-index:100;background:rgba(8,11,20,.8);backdrop-filte
 .nav-section{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.12em;padding:14px 12px 6px}
 .nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);border:none;background:none;width:100%;text-align:left;transition:all var(--transition);position:relative}
 .nav-item:hover{background:var(--surface2);color:var(--text)}
-.nav-item:hover svg{color:var(--text)}
+.nav-item:hover .ni{transform:scale(1.15) rotate(-5deg);filter:drop-shadow(0 0 6px currentColor)}
 .nav-item.active{background:linear-gradient(135deg,rgba(124,111,255,.18),rgba(124,111,255,.08));color:var(--accent2);border:1px solid rgba(124,111,255,.18)}
-.nav-item.active svg{color:var(--accent2)}
+.nav-item.active .ni{color:var(--accent2);filter:drop-shadow(0 0 8px rgba(124,111,255,.6))}
+.nav-item.active[data-page="dashboard"] .ni{color:#a78bfa;filter:drop-shadow(0 0 8px rgba(167,139,250,.7))}
+.nav-item.active[data-page="transactions"] .ni{color:#38bdf8;filter:drop-shadow(0 0 8px rgba(56,189,248,.7))}
+.nav-item.active[data-page="budget"] .ni{color:#ffb340;filter:drop-shadow(0 0 8px rgba(255,179,64,.7))}
+.nav-item.active[data-page="reports"] .ni{color:#2dd4a0;filter:drop-shadow(0 0 8px rgba(45,212,160,.7))}
+.nav-item.active[data-page="ai"] .ni{color:#f472b6;filter:drop-shadow(0 0 8px rgba(244,114,182,.7))}
+.nav-item.active[data-page="shared"] .ni{color:#38bdf8;filter:drop-shadow(0 0 8px rgba(56,189,248,.7))}
+.nav-item.active[data-page="premium"] .ni{color:#ffb340;filter:drop-shadow(0 0 8px rgba(255,179,64,.7))}
+.nav-item.active[data-page="settings"] .ni{color:#6b74a0;filter:drop-shadow(0 0 6px rgba(107,116,160,.5))}
+.ni{width:20px;height:20px;flex-shrink:0;transition:all .25s cubic-bezier(.34,1.56,.64,1);color:var(--muted)}
 .nav-dot{position:absolute;right:12px;width:5px;height:5px;border-radius:50%;background:var(--accent);display:none;box-shadow:0 0 8px var(--accent)}
 .nav-item.active .nav-dot{display:block}
 .nav-icon{width:20px;height:20px;flex-shrink:0}
@@ -95,7 +104,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(8,11,20,.8);backdrop-filte
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 
 .section-title{font-size:13px;font-weight:700;margin-bottom:16px;color:var(--text);display:flex;align-items:center;gap:8px}
-.section-title svg{width:16px;height:16px;color:var(--accent)}
+.section-title svg{width:16px;height:16px;color:var(--accent);transition:transform .3s ease}
+.section-title:hover svg{transform:scale(1.2) rotate(-5deg)}
 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all var(--transition);border:none;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap}
@@ -210,6 +220,14 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 .mob-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;padding:6px 12px;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;transition:color var(--transition)}
 .mob-item svg{width:20px;height:20px}
 .mob-item.active{color:var(--accent2)}
+.mob-icon{transition:all .25s cubic-bezier(.34,1.56,.64,1)}
+.mob-item:hover .mob-icon{transform:scale(1.2) translateY(-2px)}
+.mob-item.active .mob-icon{filter:drop-shadow(0 0 6px currentColor)}
+.mob-item.active[data-page="dashboard"] .mob-icon{filter:drop-shadow(0 0 8px rgba(167,139,250,.8))}
+.mob-item.active[data-page="transactions"] .mob-icon{filter:drop-shadow(0 0 8px rgba(56,189,248,.8))}
+.mob-item.active[data-page="budget"] .mob-icon{filter:drop-shadow(0 0 8px rgba(255,179,64,.8))}
+.mob-item.active[data-page="reports"] .mob-icon{filter:drop-shadow(0 0 8px rgba(45,212,160,.8))}
+.mob-item.active[data-page="ai"] .mob-icon{filter:drop-shadow(0 0 8px rgba(244,114,182,.8))}
 
 .logo-animated{display:flex;align-items:center;justify-content:center;cursor:pointer}
 .logo-animated:hover svg{transform:scale(1.08);transition:transform .3s ease}
@@ -347,27 +365,27 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 <div class="layout" id="appLayout" style="display:none">
   <aside class="sidebar">
     <div class="nav-section">Principal</div>
-    <button class="nav-item active" data-page="dashboard"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>Dashboard<span class="nav-dot"></span></button>
-    <button class="nav-item" data-page="transactions"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Transacciones</button>
-    <button class="nav-item" data-page="budget"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Presupuesto</button>
-    <button class="nav-item" data-page="reports"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Reportes</button>
+    <button class="nav-item active" data-page="dashboard"><span class="ni" style="color:#a78bfa"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span>Dashboard<span class="nav-dot"></span></button>
+    <button class="nav-item" data-page="transactions"><span class="ni" style="color:#38bdf8"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Transacciones</button>
+    <button class="nav-item" data-page="budget"><span class="ni" style="color:#ffb340"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Presupuesto</button>
+    <button class="nav-item" data-page="reports"><span class="ni" style="color:#2dd4a0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Reportes</button>
     <div class="nav-section">Herramientas</div>
-    <button class="nav-item" data-page="ai"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg></span>Asistente IA</button>
-    <button class="nav-item" data-page="shared"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Compartido</button>
+    <button class="nav-item" data-page="ai"><span class="ni" style="color:#f472b6"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg></span>Asistente IA</button>
+    <button class="nav-item" data-page="shared"><span class="ni" style="color:#38bdf8"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Compartido</button>
     <div class="nav-section" style="margin-top:auto">Cuenta</div>
-    <button class="nav-item" data-page="premium"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Premium<span class="badge-premium">PRO</span></button>
-    <button class="nav-item" data-page="settings"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Ajustes</button>
+    <button class="nav-item" data-page="premium"><span class="ni" style="color:#ffb340"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Premium<span class="badge-premium">PRO</span></button>
+    <button class="nav-item" data-page="settings"><span class="ni" style="color:#6b74a0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Ajustes</button>
   </aside>
   <main class="main" id="mainContent"><div class="loading"><div class="spinner"></div>Conectando...</div></main>
 </div>
 
 <nav class="mobile-nav" id="mobileNav" style="display:none">
   <div class="mobile-nav-inner">
-    <button class="mob-item active" data-page="dashboard"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Inicio</button>
-    <button class="mob-item" data-page="transactions"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Gastos</button>
-    <button class="mob-item" data-page="budget"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Budget</button>
-    <button class="mob-item" data-page="reports"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reportes</button>
-    <button class="mob-item" data-page="ai"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>IA</button>
+    <button class="mob-item active" data-page="dashboard"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2" class="mob-icon"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>Inicio</button>
+    <button class="mob-item" data-page="transactions"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" class="mob-icon"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Gastos</button>
+    <button class="mob-item" data-page="budget"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ffb340" stroke-width="2.2" class="mob-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Budget</button>
+    <button class="mob-item" data-page="reports"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2dd4a0" stroke-width="2.2" class="mob-icon"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reportes</button>
+    <button class="mob-item" data-page="ai"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2.2" class="mob-icon"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>IA</button>
   </div>
 </nav>
 
@@ -731,9 +749,24 @@ async function saveProfile(){const name=document.getElementById('settingsName').
 
 const PAGES={dashboard:renderDashboard,transactions:renderTransactions,budget:renderBudget,reports:renderReports,ai:renderAI,shared:renderShared,premium:renderPremium,settings:renderSettings};
 
+const NAV_COLORS={'dashboard':'#a78bfa','transactions':'#38bdf8','budget':'#ffb340','reports':'#2dd4a0','ai':'#f472b6','shared':'#38bdf8','premium':'#ffb340','settings':'#6b74a0'};
 function navigate(p){
   page=p;
-  document.querySelectorAll('.nav-item,.mob-item').forEach(el=>{const a=el.dataset.page===p;el.classList.toggle('active',a);const dot=el.querySelector('.nav-dot');if(dot)dot.style.display=a?'block':'none'});
+  document.querySelectorAll('.nav-item,.mob-item').forEach(el=>{
+    const a=el.dataset.page===p;
+    el.classList.toggle('active',a);
+    const dot=el.querySelector('.nav-dot');if(dot)dot.style.display=a?'block':'none';
+    const ni=el.querySelector('.ni,.mob-icon');
+    if(ni){
+      if(a){
+        const col=NAV_COLORS[p]||'var(--accent2)';
+        ni.style.color=col;
+        ni.style.filter=`drop-shadow(0 0 8px ${col}88)`;
+      } else {
+        ni.style.filter='none';
+      }
+    }
+  });
   document.getElementById('mainContent').innerHTML=(PAGES[p]||renderDashboard)();
   afterRender(p);window.scrollTo(0,0);
   document.getElementById('avatarMenu').classList.remove('open');
