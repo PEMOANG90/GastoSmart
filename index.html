@@ -400,8 +400,9 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
   </div>
 </div>
 
-<!-- APP NAV -->
-<nav id="appNav" style="display:none">
+<!-- APP WRAPPER -->
+<div id="appWrapper" style="display:none;flex-direction:column;min-height:100vh;flex:1">
+<nav id="appNav">
   <div class="nav-brand">
     <div class="logo-animated" id="navLogo">
       <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
@@ -453,6 +454,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
   </aside>
   <main class="main" id="mainContent"></main>
 </div>
+</div><!-- end appWrapper -->
 
 <nav class="mobile-nav" id="mobileNav" style="display:none">
   <div class="mobile-nav-inner">
@@ -757,7 +759,7 @@ async function signOut(){
   window.location.replace(window.location.pathname+'?x='+Date.now());
 }
 
-function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
+function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appWrapper').style.display='none';document.getElementById('mobileNav').style.display='none'}
 // CACHE BUSTER - fuerza siempre la versión más reciente
 (function(){
   const BUILD='1779952245';
@@ -799,8 +801,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 
 async function initApp(){
   document.getElementById('authScreen').style.display='none';
-  document.getElementById('appNav').style.display='flex';
-  document.getElementById('appLayout').style.display='flex';
+  document.getElementById('appWrapper').style.display='flex';
   document.getElementById('mobileNav').style.display='block';
   const name=currentUser.user_metadata?.name||currentUser.email||'Usuario';
   const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
