@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260528160549">
+<meta name="app-version" content="20260528163256">
 <title>GastoSmart 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -486,7 +486,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{
 }});
 
 // ─── STATE ──────────────────────────────────────────────
-let user=null,txs=[],tarjetas=[],page='dashboard',txType='gasto',editTcId=null;
+let user=null,txs=[],tarjetas=[],page='dashboard',txType='gasto',editTcId=null,userBudgets={};
 
 // ─── AUTH ────────────────────────────────────────────────
 let authMode='login';
@@ -537,10 +537,10 @@ async function doGoogle(){
 async function doSignOut(){
   // scope:'local' cierra la sesion al instante, sin llamada de red (no se cuelga)
   try{await sb.auth.signOut({scope:'local'})}catch(e){}
-  try{localStorage.removeItem('gs_auth')}catch(e){}
-  try{sessionStorage.removeItem('gs_auth')}catch(e){}
-  try{store.clear()}catch(e){}
   try{localStorage.clear()}catch(e){}
+  try{sessionStorage.clear()}catch(e){}
+  // marca de logout: sobrevive la recarga y obliga a mostrar login
+  try{sessionStorage.setItem('gs_logout','1')}catch(e){}
   user=null;txs=[];tarjetas=[];
   // Recarga a una URL limpia (sin hash de OAuth ni parametros)
   window.location.replace(window.location.origin+window.location.pathname);
@@ -556,6 +556,7 @@ async function initApp(){
   navigate('dashboard');
   try{
     await ensureProfile(name);
+    await loadBudgets();
     await loadTxs();
     await loadTarjetas();
     navigate('dashboard');
@@ -576,16 +577,62 @@ async function loadTarjetas(){
     else tarjetas=JSON.parse(store.getItem('gs_tarjetas')||'[]');
   }catch(e){tarjetas=JSON.parse(store.getItem('gs_tarjetas')||'[]')}
 }
+async function loadBudgets(){
+  try{
+    const{data}=await sb.from('profiles').select('budgets').eq('id',user.id).single();
+    userBudgets=(data&&data.budgets&&Object.keys(data.budgets).length)?data.budgets:{...BUDGETS};
+  }catch(e){userBudgets={...BUDGETS};}
+}
+function collectBudgetInputs(){
+  const next={};
+  document.querySelectorAll('[data-budget-cat]').forEach(i=>{
+    const v=parseFloat(i.value);
+    next[i.dataset.budgetCat]=(isNaN(v)||v<0)?0:v;
+  });
+  return next;
+}
+function addBudgetCat(){
+  userBudgets=collectBudgetInputs();
+  const sel=document.getElementById('newBudgetCat');
+  const c=sel&&sel.value;
+  if(c&&!(c in userBudgets))userBudgets[c]=0;
+  navigate('budget');
+}
+function removeBudgetCat(c){
+  userBudgets=collectBudgetInputs();
+  delete userBudgets[c];
+  navigate('budget');
+}
+async function saveBudgets(){
+  userBudgets=collectBudgetInputs();
+  const btn=document.getElementById('saveBudgetBtn');
+  if(btn){btn.textContent='Guardando...';btn.disabled=true;}
+  try{
+    const{error}=await sb.from('profiles').update({budgets:userBudgets}).eq('id',user.id);
+    if(error)throw error;
+    if(btn){btn.textContent='✓ Guardado';setTimeout(()=>{if(btn){btn.textContent='💾 Guardar';btn.disabled=false;}},1500);}
+  }catch(e){
+    if(btn){btn.textContent='Error al guardar';btn.disabled=false;}
+  }
+}
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(isEdge)return;
+  if(sessionStorage.getItem('gs_logout'))return; // acabamos de cerrar sesion: no auto-entrar
   if(event==='SIGNED_IN'&&session?.user&&!user){user=session.user;await initApp();}
-  if(event==='SIGNED_OUT'){user=null;window.location.replace(window.location.pathname);}
+  if(event==='SIGNED_OUT'){user=null;showLogin();}
 });
 
 async function start(){
   if(isEdge){showLogin();return;}
   showLogin();
+  // Si venimos de cerrar sesion, forzar login y limpiar cualquier rastro
+  if(sessionStorage.getItem('gs_logout')){
+    sessionStorage.removeItem('gs_logout');
+    try{await sb.auth.signOut({scope:'local'})}catch(e){}
+    if(location.hash)history.replaceState(null,'',location.origin+location.pathname);
+    return;
+  }
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(session?.user){user=session.user;await initApp();}
@@ -788,8 +835,8 @@ function renderDashboard(){
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Presupuesto mensual
       </div>
-      ${Object.entries(BUDGETS).filter(([c])=>cats[c]>0).slice(0,6).map(([c,l])=>{
-        const spent=cats[c]||0,pct=Math.min(Math.round((spent/l)*100),100);
+      ${Object.entries(userBudgets).sort((a,b)=>(cats[b[0]]||0)-(cats[a[0]]||0)).slice(0,6).map(([c,l])=>{
+        const spent=cats[c]||0,pct=l>0?Math.min(Math.round((spent/l)*100),100):0;
         const col=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
         return`<div style="margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
@@ -797,7 +844,7 @@ function renderDashboard(){
           </div>
           <div class="progress"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div>
         </div>`;
-      }).join('')||'<div class="empty"><p>Sin movimientos este mes</p></div>'}
+      }).join('')||'<div class="empty"><p>Configura tu presupuesto en la sección Presupuesto</p></div>'}
     </div>
   </div>
   <div class="grid2">
@@ -866,25 +913,41 @@ function txTable(list){
 
 function renderBudget(){
   const cats=byCat(monthTxs());
+  const entries=Object.entries(userBudgets);
+  const available=Object.keys(CATS).filter(c=>!(c in userBudgets)).sort();
   return`
   <div class="page-header">
-    <div class="page-title">Presupuesto</div>
-    <div class="page-sub">Límites mensuales por categoría</div>
+    <div>
+      <div class="page-title">Presupuesto</div>
+      <div class="page-sub">Define tus límites mensuales por categoría</div>
+    </div>
+    <button id="saveBudgetBtn" class="btn btn-primary btn-sm" onclick="saveBudgets()">💾 Guardar</button>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
-    ${Object.entries(BUDGETS).map(([cat,limit])=>{
-      const spent=cats[cat]||0,pct=Math.round((spent/limit)*100),over=pct>100;
+  <div class="card" style="margin-bottom:14px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+    <div style="flex:1;min-width:180px">
+      <label class="field-label">Agregar categoría al presupuesto</label>
+      <select id="newBudgetCat" class="field-input">
+        ${available.length?available.map(c=>`<option value="${c}">${c}</option>`).join(''):'<option value="">— Todas agregadas —</option>'}
+      </select>
+    </div>
+    <button class="btn btn-outline" style="width:auto" onclick="addBudgetCat()">+ Agregar</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+    ${entries.map(([cat,limit])=>{
+      const spent=cats[cat]||0,pct=limit>0?Math.round((spent/limit)*100):0,over=pct>100;
       const col=over?'var(--red)':pct>70?'var(--amber)':'var(--green)';
       return`<div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <div style="font-weight:600;font-size:14px">${cat}</div>
-          <span class="chip ${over?'chip-red':pct>70?'chip-amber':'chip-green'}">${pct}%</span>
+          <button onclick="removeBudgetCat('${cat.replace(/'/g,"\\'")}')" title="Quitar" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px">🗑</button>
         </div>
-        <div style="font-size:20px;font-weight:700;color:${col};margin-bottom:8px">${mxn(spent)}</div>
-        <div class="progress" style="margin-bottom:6px"><div class="progress-fill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div>
-        <div style="font-size:11px;color:var(--muted)">Límite: ${mxn(limit)} · ${over?'<span style="color:var(--red)">Excedido</span>':`Libre: ${mxn(limit-spent)}`}</div>
+        <div style="font-size:20px;font-weight:700;color:${col};margin-bottom:8px">${mxn(spent)} <span style="font-size:12px;color:var(--muted);font-weight:500">· ${pct}%</span></div>
+        <div class="progress" style="margin-bottom:10px"><div class="progress-fill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div>
+        <label class="field-label">Límite mensual (MXN)</label>
+        <input type="number" min="0" step="50" class="field-input" data-budget-cat="${cat}" value="${limit}">
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">${over?'<span style="color:var(--red)">Excedido</span>':`Disponible: ${mxn(Math.max(limit-spent,0))}`}</div>
       </div>`;
-    }).join('')}
+    }).join('')||'<div class="empty"><p>Agrega una categoría arriba para empezar tu presupuesto.</p></div>'}
   </div>`;
 }
 
