@@ -707,22 +707,24 @@ document.getElementById('authSubmit').onclick=async()=>{
 document.getElementById('authGoogle').onclick=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});if(error)showAuthError(error.message)};
 async function signOut(){
   try{ await sb.auth.signOut(); }catch(e){}
-  // Limpiar todos los posibles almacenamientos
-  try{ safeStorage.clear(); }catch(e){}
   try{ localStorage.clear(); }catch(e){}
   try{ sessionStorage.clear(); }catch(e){}
-  currentUser = null;
-  txs = [];
-  // Recarga limpia
-  window.location.replace(window.location.origin + window.location.pathname);
+  currentUser=null; txs=[];
+  // Recargar con timestamp único para evitar caché en cualquier navegador
+  window.location.replace(window.location.pathname+'?x='+Date.now());
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
 async function startApp(){
-  // Memoria pura: cada recarga comienza sin sesión
-  // El usuario debe iniciar sesión cada vez que abre la app
+  // En Edge: siempre mostrar login — evita sesión persistente bloqueada
+  if(isEdge){
+    try{ await sb.auth.signOut(); }catch(e){}
+    try{ sessionStorage.clear(); }catch(e){}
+    showAuth();
+    return;
+  }
+  // Chrome/Safari/Firefox: intentar recuperar sesión
   showAuth();
-  // Intentar recuperar sesión del servidor (para el caso de Google OAuth redirect)
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(session?.user){
@@ -735,6 +737,7 @@ async function startApp(){
 }
 
 sb.auth.onAuthStateChange(async(event,session)=>{
+  if(isEdge) return; // Edge: no auto-login
   if(event==='SIGNED_IN'&&session?.user){currentUser=session.user;if(document.getElementById('authScreen').style.display!=='none')await initApp()}
   else if(event==='SIGNED_OUT'){currentUser=null;showAuth()}
 });
