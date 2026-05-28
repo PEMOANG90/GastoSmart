@@ -523,42 +523,28 @@ document.getElementById('authSubmit').onclick=async()=>{
 };
 document.getElementById('authGoogle').onclick=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});if(error)showAuthError(error.message)};
 async function signOut(){
-  // Cerrar sesión en Supabase
+  // 1. Cerrar sesión en Supabase
   try{ await sb.auth.signOut(); }catch(e){}
-  // Limpiar estado local
-  currentUser=null;
-  txs=[];
-  // Limpiar storage de todas las formas posibles
+  // 2. Limpiar todo el storage
   try{ safeStorage.removeItem('gastosmart_auth'); }catch(e){}
   try{ localStorage.clear(); }catch(e){}
   try{ sessionStorage.clear(); }catch(e){}
-  // Limpiar cookies relacionadas
-  try{
-    document.cookie.split(';').forEach(c=>{
-      document.cookie=c.replace(/^ +/,'').replace(/=.*/,'=;expires='+new Date().toUTCString()+';path=/');
-    });
-  }catch(e){}
-  // Mostrar pantalla de login directamente
-  document.getElementById('authScreen').style.display='flex';
-  document.getElementById('appNav').style.display='none';
-  document.getElementById('appLayout').style.display='none';
-  document.getElementById('mobileNav').style.display='none';
-  document.getElementById('authEmail').value='';
-  document.getElementById('authPassword').value='';
-  document.getElementById('mainContent').innerHTML='';
-  // Edge fix: forzar recarga si persiste la sesión
-  setTimeout(async()=>{
-    try{
-      const{data}=await sb.auth.getSession();
-      if(data.session){
-        window.location.replace(window.location.pathname+'?signout='+Date.now());
-      }
-    }catch(e){}
-  },500);
+  // 3. Forzar recarga completa sin caché — funciona en Edge, Chrome y Safari
+  window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
 async function startApp(){
+  // Si viene de un signout forzado, limpiar y mostrar login
+  if(window.location.search.includes('t=')){
+    try{ await sb.auth.signOut(); }catch(e){}
+    try{ localStorage.clear(); }catch(e){}
+    try{ sessionStorage.clear(); }catch(e){}
+    // Quitar el parámetro de la URL sin recargar
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showAuth();
+    return;
+  }
   showAuth();
   try{
     const{data:{session}}=await sb.auth.getSession();
