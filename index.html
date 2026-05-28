@@ -21,7 +21,7 @@
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;overflow-x:hidden}
 
 /* ANIMATED BG */
-.bg-grid{display:none}
+
 .orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(100px);animation:orbFloat 8s ease-in-out infinite}
 .orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,111,255,.18),transparent 70%);top:-200px;left:-150px}
 .orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(45,212,160,.15),transparent 70%);bottom:-150px;right:-100px;animation-delay:-4s}
@@ -493,9 +493,7 @@ async function signOut(){
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
 async function startApp(){
-  // Mostrar login de inmediato — nunca se queda cargando
   showAuth();
-  // Verificar sesión en segundo plano sin bloquear UI
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(session?.user){
@@ -503,7 +501,6 @@ async function startApp(){
       await initApp();
     }
   }catch(e){
-    // Si falla, el usuario ya ve el login y puede entrar
     console.log('Sin sesión activa');
   }
 }
@@ -527,8 +524,7 @@ async function initApp(){
     await ensureProfile(name);
     await loadTransactions();
   }catch(e){console.log('Error cargando datos:',e)}
-  // Force navigate to dashboard
-  setTimeout(()=>navigate('dashboard'),100);
+  navigate('dashboard');
 }
 async function ensureProfile(name){const{data}=await sb.from('profiles').select('id').eq('id',currentUser.id).single();if(!data)await sb.from('profiles').insert({id:currentUser.id,name,currency:'MXN'})}
 async function loadTransactions(){const{data,error}=await sb.from('transactions').select('*').eq('user_id',currentUser.id).order('date',{ascending:false});if(!error&&data)txs=data}
