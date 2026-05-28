@@ -439,13 +439,40 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
       <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="txDate" type="date"></div>
     </div>
     <div class="form-group"><label class="form-label">Categoría</label>
-      <select class="form-input" id="txCat">
-        <option value="Alimentación">Alimentación</option><option value="Transporte">Transporte</option>
-        <option value="Vivienda">Vivienda</option><option value="Salud">Salud</option>
-        <option value="Entretenimiento">Entretenimiento</option><option value="Educación">Educación</option>
-        <option value="Ropa">Ropa</option><option value="Servicios">Servicios</option>
-        <option value="Ahorro">Ahorro</option><option value="Otros">Otros</option>
+      <select class="form-input" id="txCat" onchange="checkCustomCat(this.value)">
+        <optgroup label="🍽️ Vida diaria">
+          <option value="Alimentación">Alimentación</option>
+          <option value="Transporte">Transporte</option>
+          <option value="Vivienda">Vivienda</option>
+          <option value="Servicios">Servicios</option>
+          <option value="Ropa">Ropa</option>
+          <option value="Mascotas">Mascotas</option>
+          <option value="Familia">Familia</option>
+        </optgroup>
+        <optgroup label="🏥 Salud">
+          <option value="Salud">Consultas médicas</option>
+          <option value="Medicamentos">Medicamentos</option>
+        </optgroup>
+        <optgroup label="💳 Deudas y crédito">
+          <option value="Deuda TC">Tarjeta de crédito</option>
+          <option value="Préstamos">Préstamos</option>
+          <option value="Impuestos">Impuestos / SAT</option>
+        </optgroup>
+        <optgroup label="🎮 Ocio y cultura">
+          <option value="Entretenimiento">Entretenimiento</option>
+          <option value="Suscripciones">Suscripciones (Netflix, Spotify...)</option>
+          <option value="Educación">Educación</option>
+        </optgroup>
+        <optgroup label="💰 Finanzas">
+          <option value="Ahorro">Ahorro</option>
+          <option value="Inversión">Inversión</option>
+        </optgroup>
+        <optgroup label="➕ Otros">
+          <option value="Otros">Otros</option>
+          <option value="Personalizada">✏️ Crear categoría personalizada...</option>
+        </optgroup>
       </select>
+      <input class="form-input" id="customCatInput" placeholder="Escribe el nombre de tu categoría..." style="display:none;margin-top:8px">
     </div>
     <div class="form-group"><label class="form-label">Nota (opcional)</label><input class="form-input" id="txNote" placeholder="Detalles adicionales..."></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
@@ -459,7 +486,38 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 const SUPABASE_URL='https://ekoojdgqizzdbcqkxgln.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb29qZGdxaXp6ZGJjcWt4Z2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTAwMjksImV4cCI6MjA5NTQ4NjAyOX0.Ya1IqJuccG7D0nEfFeZ1ZXBSAWAyzIHhDYkfutZpkzI';
 // Nota: La anon key es segura para uso público — el acceso a datos está protegido por RLS en Supabase
-const safeStorage=(()=>{try{localStorage.setItem('gs_t','1');localStorage.removeItem('gs_t');return localStorage}catch(e){const s={};return{getItem:k=>s[k]||null,setItem:(k,v)=>{s[k]=v},removeItem:k=>{delete s[k]}}}})();
+// Almacenamiento inteligente — detecta el navegador y usa la mejor estrategia
+const isEdge = /Edg\//.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+
+// En Edge usamos sessionStorage (dura la sesión del navegador, se borra al cerrar)
+// En Chrome/Safari/Firefox usamos localStorage (persiste entre visitas)
+const safeStorage = (() => {
+  // Primero intentar sessionStorage — funciona en Edge sin restricciones
+  try {
+    sessionStorage.setItem('gs_t', '1');
+    sessionStorage.removeItem('gs_t');
+    if (isEdge) {
+      // Edge: usar sessionStorage — sesión dura mientras el navegador esté abierto
+      return sessionStorage;
+    }
+  } catch(e) {}
+
+  // Chrome/Safari/Firefox: usar localStorage — sesión persiste entre visitas
+  try {
+    localStorage.setItem('gs_t', '1');
+    localStorage.removeItem('gs_t');
+    return localStorage;
+  } catch(e) {}
+
+  // Último recurso: memoria RAM
+  const mem = {};
+  return {
+    getItem: k => mem[k] || null,
+    setItem: (k, v) => { mem[k] = String(v); },
+    removeItem: k => { delete mem[k]; },
+    clear: () => { Object.keys(mem).forEach(k => delete mem[k]); }
+  };
+})();
 
 // Interceptar fetch de Supabase para usar proxy Netlify en Edge
 const _origFetch = window.fetch.bind(window);
@@ -476,14 +534,23 @@ const CATS={
   'Transporte':{color:'#38bdf8',bg:'rgba(56,189,248,.12)',icon:'car'},
   'Vivienda':{color:'#a78bfa',bg:'rgba(167,139,250,.12)',icon:'home'},
   'Salud':{color:'#ff6b7a',bg:'rgba(255,107,122,.12)',icon:'heart'},
+  'Medicamentos':{color:'#ff6b7a',bg:'rgba(255,107,122,.12)',icon:'activity'},
+  'Deuda TC':{color:'#f97316',bg:'rgba(249,115,22,.12)',icon:'credit-card'},
+  'Préstamos':{color:'#f97316',bg:'rgba(249,115,22,.12)',icon:'trending-down'},
   'Entretenimiento':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'play-circle'},
+  'Suscripciones':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'repeat'},
   'Educación':{color:'#38bdf8',bg:'rgba(56,189,248,.12)',icon:'book-open'},
   'Ropa':{color:'#f472b6',bg:'rgba(244,114,182,.12)',icon:'tag'},
   'Servicios':{color:'#ffb340',bg:'rgba(255,179,64,.12)',icon:'zap'},
-  'Ahorro':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'piggy-bank'},
-  'Otros':{color:'#6b74a0',bg:'rgba(107,116,160,.12)',icon:'box'}
+  'Mascotas':{color:'#a78bfa',bg:'rgba(167,139,250,.12)',icon:'feather'},
+  'Familia':{color:'#f472b6',bg:'rgba(244,114,182,.12)',icon:'users'},
+  'Ahorro':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'trending-up'},
+  'Inversión':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'bar-chart-2'},
+  'Impuestos':{color:'#6b74a0',bg:'rgba(107,116,160,.12)',icon:'file-text'},
+  'Otros':{color:'#6b74a0',bg:'rgba(107,116,160,.12)',icon:'box'},
+  'Personalizada':{color:'#7c6fff',bg:'rgba(124,111,255,.12)',icon:'plus-circle'}
 };
-const BUDGETS={'Alimentación':3000,'Transporte':1500,'Vivienda':9000,'Salud':1000,'Entretenimiento':800,'Educación':2000,'Ropa':1000,'Servicios':500};
+const BUDGETS={'Alimentación':3000,'Transporte':1500,'Vivienda':9000,'Salud':1000,'Medicamentos':500,'Deuda TC':2000,'Préstamos':1500,'Entretenimiento':800,'Suscripciones':400,'Educación':2000,'Ropa':1000,'Servicios':500,'Mascotas':500,'Familia':1500,'Ahorro':2000,'Inversión':1000,'Impuestos':500};
 let currentUser=null,txs=[],page='dashboard',addType='gasto';
 
 function mxn(n){return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits:0}).format(n)}
@@ -523,29 +590,23 @@ document.getElementById('authSubmit').onclick=async()=>{
 };
 document.getElementById('authGoogle').onclick=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});if(error)showAuthError(error.message)};
 async function signOut(){
-  // 1. Cerrar sesión en Supabase
   try{ await sb.auth.signOut(); }catch(e){}
-  // 2. Limpiar todo el storage
-  try{ safeStorage.removeItem('gastosmart_auth'); }catch(e){}
+  // Limpiar todos los posibles almacenamientos
+  try{ safeStorage.clear(); }catch(e){}
   try{ localStorage.clear(); }catch(e){}
   try{ sessionStorage.clear(); }catch(e){}
-  // 3. Forzar recarga completa sin caché — funciona en Edge, Chrome y Safari
-  window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
+  currentUser = null;
+  txs = [];
+  // Recarga limpia
+  window.location.replace(window.location.origin + window.location.pathname);
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
 async function startApp(){
-  // Si viene de un signout forzado, limpiar y mostrar login
-  if(window.location.search.includes('t=')){
-    try{ await sb.auth.signOut(); }catch(e){}
-    try{ localStorage.clear(); }catch(e){}
-    try{ sessionStorage.clear(); }catch(e){}
-    // Quitar el parámetro de la URL sin recargar
-    window.history.replaceState({}, document.title, window.location.pathname);
-    showAuth();
-    return;
-  }
+  // Memoria pura: cada recarga comienza sin sesión
+  // El usuario debe iniciar sesión cada vez que abre la app
   showAuth();
+  // Intentar recuperar sesión del servidor (para el caso de Google OAuth redirect)
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(session?.user){
@@ -822,6 +883,17 @@ async function saveProfile(){const name=document.getElementById('settingsName').
 
 const PAGES={dashboard:renderDashboard,transactions:renderTransactions,budget:renderBudget,reports:renderReports,ai:renderAI,shared:renderShared,premium:renderPremium,settings:renderSettings};
 
+// Categoría personalizada
+function checkCustomCat(val){
+  const inp = document.getElementById('customCatInput');
+  if(val === 'Personalizada'){
+    inp.style.display = 'block';
+    inp.focus();
+  } else {
+    inp.style.display = 'none';
+  }
+}
+
 const NAV_COLORS={'dashboard':'#a78bfa','transactions':'#38bdf8','budget':'#ffb340','reports':'#2dd4a0','ai':'#f472b6','shared':'#38bdf8','premium':'#ffb340','settings':'#6b74a0'};
 function navigate(p){
   page=p;
@@ -876,9 +948,16 @@ document.getElementById('cancelModal').onclick=()=>document.getElementById('addM
 document.getElementById('addModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
 document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.type-btn').forEach(b=>{b.classList.remove('ag','ai')});addType=btn.dataset.type;btn.classList.add(addType==='gasto'?'ag':'ai')}));
 document.getElementById('saveTransaction').addEventListener('click',async()=>{
-  const desc=document.getElementById('txDesc').value.trim(),amount=parseFloat(document.getElementById('txAmount').value),category=document.getElementById('txCat').value,date=document.getElementById('txDate').value,note=document.getElementById('txNote').value.trim();
+  const desc=document.getElementById('txDesc').value.trim(),amount=parseFloat(document.getElementById('txAmount').value),date=document.getElementById('txDate').value,note=document.getElementById('txNote').value.trim();
+  const selCat=document.getElementById('txCat').value;
+  const customCat=document.getElementById('customCatInput').value.trim();
+  const category = selCat==='Personalizada' && customCat ? customCat : selCat;
   if(!desc||!amount||!date){alert('Completa descripción, monto y fecha');return}
   const btn=document.getElementById('saveTransaction');btn.innerHTML='<div class="spinner" style="width:14px;height:14px"></div>Guardando...';btn.disabled=true;
+  // Agregar categoría personalizada al registro local
+  if(selCat==='Personalizada' && customCat && !CATS[customCat]){
+    CATS[customCat]={color:'#7c6fff',bg:'rgba(124,111,255,.12)',icon:'plus-circle'};
+  }
   const ok=await addTransaction({type:addType,description:desc,amount,category,date,note});
   if(ok){document.getElementById('addModal').classList.remove('open');navigate(page)}else alert('Error al guardar. Intenta de nuevo.');
   btn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Guardar';btn.disabled=false;
