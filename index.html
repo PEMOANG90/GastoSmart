@@ -401,7 +401,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 </div>
 
 <!-- APP WRAPPER -->
-<div id="appWrapper" style="display:none;flex-direction:column;width:100%"
+<div id="appWrapper" style="display:none"
 <nav id="appNav">
   <div class="nav-brand">
     <div class="logo-animated" id="navLogo">
@@ -801,7 +801,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 
 async function initApp(){
   document.getElementById('authScreen').style.display='none';
-  document.getElementById('appWrapper').style.display='flex';document.getElementById('appWrapper').style.flexDirection='column';
+  const aw=document.getElementById('appWrapper');aw.style.display='flex';aw.style.flexDirection='column';aw.style.position='fixed';aw.style.inset='0';aw.style.overflow='hidden';
   document.getElementById('mobileNav').style.display='block';document.getElementById('appLayout').style.display='flex';
   const name=currentUser.user_metadata?.name||currentUser.email||'Usuario';
   const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
