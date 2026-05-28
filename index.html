@@ -21,7 +21,7 @@
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;overflow-x:hidden}
 
 /* ANIMATED BG */
-.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(124,111,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(124,111,255,.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.bg-grid{display:none}
 .orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(100px);animation:orbFloat 8s ease-in-out infinite}
 .orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,111,255,.18),transparent 70%);top:-200px;left:-150px}
 .orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(45,212,160,.15),transparent 70%);bottom:-150px;right:-100px;animation-delay:-4s}
@@ -279,7 +279,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 </style>
 </head>
 <body>
-<div class="bg-grid"></div>
+
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
@@ -482,7 +482,14 @@ document.getElementById('authSubmit').onclick=async()=>{
   btn.textContent=authMode==='login'?'Iniciar sesión':'Crear cuenta';btn.disabled=false;
 };
 document.getElementById('authGoogle').onclick=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});if(error)showAuthError(error.message)};
-async function signOut(){await sb.auth.signOut();location.reload()}
+async function signOut(){
+  try{await sb.auth.signOut()}catch(e){}
+  currentUser=null;
+  txs=[];
+  // Force clear session and reload
+  safeStorage.removeItem('gastosmart_auth');
+  window.location.href=window.location.href.split('#')[0];
+}
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
 async function startApp(){
@@ -514,9 +521,14 @@ async function initApp(){
   const name=currentUser.user_metadata?.name||currentUser.email||'Usuario';
   const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('avatarInitials').textContent=initials;
-  await ensureProfile(name);
-  await loadTransactions();
-  navigate('dashboard');
+  // Show loading while fetching data
+  document.getElementById('mainContent').innerHTML='<div class="loading"><div class="spinner"></div>Cargando tus datos...</div>';
+  try{
+    await ensureProfile(name);
+    await loadTransactions();
+  }catch(e){console.log('Error cargando datos:',e)}
+  // Force navigate to dashboard
+  setTimeout(()=>navigate('dashboard'),100);
 }
 async function ensureProfile(name){const{data}=await sb.from('profiles').select('id').eq('id',currentUser.id).single();if(!data)await sb.from('profiles').insert({id:currentUser.id,name,currency:'MXN'})}
 async function loadTransactions(){const{data,error}=await sb.from('transactions').select('*').eq('user_id',currentUser.id).order('date',{ascending:false});if(!error&&data)txs=data}
