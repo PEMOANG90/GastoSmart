@@ -41,7 +41,7 @@ set TS=%date:~6,4%%date:~3,2%%date:~0,2%%time:~0,2%%time:~3,2%%time:~6,2%
 set TS=%TS: =0%
 
 REM Inyecta la version en la meta tag (acepta cualquier longitud, preserva UTF-8)
-powershell -NoProfile -Command "(Get-Content '%~dp0index.html' -Raw) -replace 'name=\"app-version\" content=\"[0-9]+\"','name=\"app-version\" content=\"%TS%\"' | Set-Content '%~dp0index.html' -NoNewline -Encoding UTF8"
+powershell -NoProfile -Command "(Get-Content '%~dp0index.html' -Raw -Encoding UTF8) -replace 'name=\"app-version\" content=\"[0-9]+\"','name=\"app-version\" content=\"%TS%\"' | Set-Content '%~dp0index.html' -NoNewline -Encoding UTF8"
 
 echo  Version inyectada: %TS%
 echo  [2/3] Subiendo a GitHub...

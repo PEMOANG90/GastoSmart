@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260528114835">
+<meta name="app-version" content="20260528115158">
 <title>GastoSmart 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -20,7 +20,7 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px}
 body{display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
 
-/* â”€â”€ AUTH â”€â”€ */
+/* ── AUTH ── */
 #authScreen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
 .auth-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:380px}
 .auth-logo{text-align:center;margin-bottom:20px}
@@ -48,7 +48,7 @@ body{display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* â”€â”€ APP SHELL â”€â”€ */
+/* ── APP SHELL ── */
 #app{display:none;flex-direction:column;min-height:100vh}
 
 /* Top Nav */
@@ -198,24 +198,24 @@ select.field-input option{background:var(--surface2)}
     <div class="auth-title">GastoSmart</div>
     <div class="auth-sub">Control inteligente de tus finanzas</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Iniciar sesiÃ³n</button>
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Iniciar sesión</button>
       <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Crear cuenta</button>
     </div>
     <div id="authMsg" class="auth-msg"></div>
     <div class="field" id="nameField" style="display:none">
       <label>Tu nombre</label>
-      <input id="authName" type="text" placeholder="Â¿CÃ³mo te llamamos?">
+      <input id="authName" type="text" placeholder="¿Cómo te llamamos?">
     </div>
     <div class="field">
-      <label>Correo electrÃ³nico</label>
+      <label>Correo electrónico</label>
       <input id="authEmail" type="email" placeholder="tu@correo.com">
     </div>
     <div class="field">
-      <label>ContraseÃ±a</label>
-      <input id="authPassword" type="password" placeholder="MÃ­nimo 6 caracteres">
+      <label>Contraseña</label>
+      <input id="authPassword" type="password" placeholder="Mínimo 6 caracteres">
     </div>
-    <button class="btn btn-primary" id="authBtn" onclick="doAuth()">Iniciar sesiÃ³n</button>
-    <div class="auth-divider">o continÃºa con</div>
+    <button class="btn btn-primary" id="authBtn" onclick="doAuth()">Iniciar sesión</button>
+    <div class="auth-divider">o continúa con</div>
     <button class="btn btn-google" onclick="doGoogle()">
       <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
       Continuar con Google
@@ -235,9 +235,9 @@ select.field-input option{background:var(--surface2)}
     <div class="avatar-btn" id="avatarBtn" onclick="toggleMenu()">
       <span id="avatarInitials">P</span>
       <div class="avatar-menu" id="avatarMenu">
-        <a onclick="navigate('settings')">âš™ï¸ Ajustes</a>
-        <a onclick="navigate('premium')">â­ Premium</a>
-        <a onclick="doSignOut()" class="danger">ðŸšª Cerrar sesiÃ³n</a>
+        <a onclick="navigate('settings')">⚙️ Ajustes</a>
+        <a onclick="navigate('premium')">⭐ Premium</a>
+        <a onclick="doSignOut()" class="danger">🚪 Cerrar sesión</a>
       </div>
     </div>
   </nav>
@@ -316,18 +316,18 @@ select.field-input option{background:var(--surface2)}
   </nav>
 </div>
 
-<!-- MODAL: Nueva transacciÃ³n -->
+<!-- MODAL: Nueva transacción -->
 <div id="txModal" class="modal-bg">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">Nueva transacciÃ³n</span>
-      <button class="close-btn" onclick="closeModal('txModal')">âœ•</button>
+      <span class="modal-title">Nueva transacción</span>
+      <button class="close-btn" onclick="closeModal('txModal')">✕</button>
     </div>
     <div class="type-toggle">
-      <button class="type-btn ag" id="typeGasto" onclick="setType('gasto')">â–¼ Gasto</button>
-      <button class="type-btn" id="typeIngreso" onclick="setType('ingreso')">â–² Ingreso</button>
+      <button class="type-btn ag" id="typeGasto" onclick="setType('gasto')">▼ Gasto</button>
+      <button class="type-btn" id="typeIngreso" onclick="setType('ingreso')">▲ Ingreso</button>
     </div>
-    <label class="field-label">DescripciÃ³n</label>
+    <label class="field-label">Descripción</label>
     <input id="txDesc" class="field-input" placeholder="ej. Supermercado, Gasolina...">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div>
@@ -339,79 +339,79 @@ select.field-input option{background:var(--surface2)}
         <input id="txDate" class="field-input" type="date">
       </div>
     </div>
-    <label class="field-label">CategorÃ­a</label>
+    <label class="field-label">Categoría</label>
     <select id="txCat" class="field-input" onchange="checkCustomCat(this.value)">
-      <optgroup label="ðŸ½ï¸ Vida diaria">
-        <option value="AlimentaciÃ³n">AlimentaciÃ³n y despensa</option>
-        <option value="Restaurantes">Restaurantes y cafÃ©s</option>
-        <option value="Transporte">Transporte pÃºblico</option>
+      <optgroup label="🍽️ Vida diaria">
+        <option value="Alimentación">Alimentación y despensa</option>
+        <option value="Restaurantes">Restaurantes y cafés</option>
+        <option value="Transporte">Transporte público</option>
         <option value="Gasolina">Gasolina</option>
         <option value="Estacionamiento">Estacionamiento y casetas</option>
         <option value="Vivienda">Renta / Hipoteca</option>
         <option value="Mantenimiento">Mantenimiento del hogar</option>
         <option value="Servicios">Servicios (agua, luz, gas)</option>
-        <option value="Internet">Internet y telefonÃ­a</option>
+        <option value="Internet">Internet y telefonía</option>
         <option value="Ropa">Ropa y calzado</option>
         <option value="Higiene">Higiene y cuidado personal</option>
         <option value="Mascotas">Mascotas</option>
-        <option value="Familia">Familia y niÃ±os</option>
+        <option value="Familia">Familia y niños</option>
       </optgroup>
-      <optgroup label="ðŸ¥ Salud">
-        <option value="Consulta mÃ©dica">Consultas mÃ©dicas</option>
+      <optgroup label="🏥 Salud">
+        <option value="Consulta médica">Consultas médicas</option>
         <option value="Medicamentos">Medicamentos</option>
         <option value="Laboratorio">Laboratorio y estudios</option>
         <option value="Dental">Dental</option>
-        <option value="Ã“ptica">Ã“ptica</option>
+        <option value="Óptica">Óptica</option>
         <option value="Gimnasio">Gimnasio y deporte</option>
-        <option value="PsicologÃ­a">PsicologÃ­a / Terapia</option>
+        <option value="Psicología">Psicología / Terapia</option>
       </optgroup>
-      <optgroup label="ðŸ’³ Deudas">
-        <option value="Deuda TC">Pago tarjeta de crÃ©dito</option>
-        <option value="PrÃ©stamo personal">PrÃ©stamo personal</option>
-        <option value="CrÃ©dito automotriz">CrÃ©dito automotriz</option>
+      <optgroup label="💳 Deudas">
+        <option value="Deuda TC">Pago tarjeta de crédito</option>
+        <option value="Préstamo personal">Préstamo personal</option>
+        <option value="Crédito automotriz">Crédito automotriz</option>
         <option value="Hipoteca">Hipoteca</option>
         <option value="INFONAVIT">INFONAVIT / FOVISSSTE</option>
         <option value="Impuestos">Impuestos / SAT</option>
         <option value="IMSS/ISSSTE">IMSS / ISSSTE</option>
       </optgroup>
-      <optgroup label="ðŸŽ® Ocio">
+      <optgroup label="🎮 Ocio">
         <option value="Entretenimiento">Entretenimiento y salidas</option>
         <option value="Streaming">Streaming (Netflix, Disney+...)</option>
-        <option value="MÃºsica">MÃºsica (Spotify...)</option>
+        <option value="Música">Música (Spotify...)</option>
         <option value="Juegos">Videojuegos y apps</option>
         <option value="Viajes">Viajes y vacaciones</option>
         <option value="Hobbies">Hobbies y aficiones</option>
       </optgroup>
-      <optgroup label="ðŸ“š EducaciÃ³n">
-        <option value="EducaciÃ³n">Colegiaturas y libros</option>
-        <option value="Cursos">Cursos y capacitaciÃ³n</option>
-        <option value="Ãštiles">Ãštiles escolares</option>
+      <optgroup label="📚 Educación">
+        <option value="Educación">Colegiaturas y libros</option>
+        <option value="Cursos">Cursos y capacitación</option>
+        <option value="Útiles">Útiles escolares</option>
         <option value="Trabajo">Gastos de trabajo</option>
         <option value="Software">Software y herramientas</option>
       </optgroup>
-      <optgroup label="ðŸ’° Finanzas">
+      <optgroup label="💰 Finanzas">
         <option value="Ahorro">Ahorro</option>
-        <option value="InversiÃ³n">InversiÃ³n</option>
+        <option value="Inversión">Inversión</option>
         <option value="Seguro">Seguros</option>
-        <option value="PensiÃ³n">PensiÃ³n / AFORE</option>
-        <option value="DonaciÃ³n">Donaciones</option>
+        <option value="Pensión">Pensión / AFORE</option>
+        <option value="Donación">Donaciones</option>
       </optgroup>
-      <optgroup label="ðŸ’µ Ingresos">
-        <option value="Salario">Salario / NÃ³mina</option>
+      <optgroup label="💵 Ingresos">
+        <option value="Salario">Salario / Nómina</option>
         <option value="Freelance">Freelance / Honorarios</option>
         <option value="Negocio">Negocio propio</option>
         <option value="Renta ingreso">Renta cobrada</option>
-        <option value="InversiÃ³n ingreso">Rendimientos de inversiÃ³n</option>
+        <option value="Inversión ingreso">Rendimientos de inversión</option>
         <option value="Regalo">Regalo / Apoyo familiar</option>
       </optgroup>
-      <optgroup label="âž• Otros">
+      <optgroup label="➕ Otros">
         <option value="Otros">Otros gastos</option>
-        <option value="__custom__">âœï¸ Escribir categorÃ­a propia...</option>
+        <option value="__custom__">✏️ Escribir categoría propia...</option>
       </optgroup>
     </select>
     <div id="customCatWrap" style="display:none">
-      <label class="field-label">Mi categorÃ­a</label>
-      <input id="customCat" class="field-input" placeholder="Escribe el nombre de tu categorÃ­a...">
+      <label class="field-label">Mi categoría</label>
+      <input id="customCat" class="field-input" placeholder="Escribe el nombre de tu categoría...">
     </div>
     <label class="field-label">Nota (opcional)</label>
     <input id="txNote" class="field-input" placeholder="Detalles adicionales...">
@@ -427,15 +427,15 @@ select.field-input option{background:var(--surface2)}
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="tcModalTitle">Nueva Tarjeta</span>
-      <button class="close-btn" onclick="closeModal('tcModal')">âœ•</button>
+      <button class="close-btn" onclick="closeModal('tcModal')">✕</button>
     </div>
-    <label class="field-label">Banco / InstituciÃ³n</label>
+    <label class="field-label">Banco / Institución</label>
     <select id="tcBanco" class="field-input">
       <option value="">Selecciona tu banco</option>
       <optgroup label="Bancos tradicionales">
         <option>BBVA</option><option>Banorte</option><option>Santander</option>
         <option>Citibanamex</option><option>HSBC</option><option>Scotiabank</option>
-        <option>Inbursa</option><option>BajÃ­o</option><option>Afirme</option>
+        <option>Inbursa</option><option>Bajío</option><option>Afirme</option>
       </optgroup>
       <optgroup label="Bancos digitales">
         <option>Nu (Nubank)</option><option>Hey Banco</option><option>Spin by OXXO</option>
@@ -452,16 +452,16 @@ select.field-input option{background:var(--surface2)}
     <label class="field-label">Nombre / Alias</label>
     <input id="tcNombre" class="field-input" placeholder="ej. Mi BBVA Oro, TC del trabajo...">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div><label class="field-label">Ãšltimos 4 dÃ­gitos</label><input id="tcDigitos" class="field-input" placeholder="1234" maxlength="4"></div>
-      <div><label class="field-label">LÃ­mite (MXN)</label><input id="tcLimite" class="field-input" type="number" placeholder="0"></div>
+      <div><label class="field-label">Últimos 4 dígitos</label><input id="tcDigitos" class="field-input" placeholder="1234" maxlength="4"></div>
+      <div><label class="field-label">Límite (MXN)</label><input id="tcLimite" class="field-input" type="number" placeholder="0"></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div><label class="field-label">Saldo actual</label><input id="tcSaldo" class="field-input" type="number" placeholder="0"></div>
-      <div><label class="field-label">Pago mÃ­nimo</label><input id="tcMinimo" class="field-input" type="number" placeholder="0"></div>
+      <div><label class="field-label">Pago mínimo</label><input id="tcMinimo" class="field-input" type="number" placeholder="0"></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-      <div><label class="field-label">DÃ­a corte</label><input id="tcCorte" class="field-input" type="number" placeholder="1-31" min="1" max="31"></div>
-      <div><label class="field-label">DÃ­a pago</label><input id="tcPago" class="field-input" type="number" placeholder="1-31" min="1" max="31"></div>
+      <div><label class="field-label">Día corte</label><input id="tcCorte" class="field-input" type="number" placeholder="1-31" min="1" max="31"></div>
+      <div><label class="field-label">Día pago</label><input id="tcPago" class="field-input" type="number" placeholder="1-31" min="1" max="31"></div>
       <div><label class="field-label">CAT %</label><input id="tcTasa" class="field-input" type="number" placeholder="45.5" step="0.1"></div>
     </div>
     <div class="modal-btns">
@@ -472,7 +472,7 @@ select.field-input option{background:var(--surface2)}
 </div>
 
 <script>
-// â”€â”€â”€ SUPABASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SUPABASE ───────────────────────────────────────────
 const SB_URL='https://ekoojdgqizzdbcqkxgln.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb29qZGdxaXp6ZGJjcWt4Z2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTAwMjksImV4cCI6MjA5NTQ4NjAyOX0.Ya1IqJuccG7D0nEfFeZ1ZXBSAWAyzIHhDYkfutZpkzI';
 
@@ -485,16 +485,16 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{
   persistSession:!isEdge,autoRefreshToken:true
 }});
 
-// â”€â”€â”€ STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── STATE ──────────────────────────────────────────────
 let user=null,txs=[],tarjetas=[],page='dashboard',txType='gasto',editTcId=null;
 
-// â”€â”€â”€ AUTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── AUTH ────────────────────────────────────────────────
 let authMode='login';
 function switchTab(m){
   authMode=m;
   document.getElementById('tabLogin').classList.toggle('active',m==='login');
   document.getElementById('tabRegister').classList.toggle('active',m==='register');
-  document.getElementById('authBtn').textContent=m==='login'?'Iniciar sesiÃ³n':'Crear cuenta';
+  document.getElementById('authBtn').textContent=m==='login'?'Iniciar sesión':'Crear cuenta';
   document.getElementById('nameField').style.display=m==='register'?'block':'none';
   setMsg('','');
 }
@@ -507,8 +507,8 @@ async function doAuth(){
   const email=document.getElementById('authEmail').value.trim();
   const pass=document.getElementById('authPassword').value;
   const name=document.getElementById('authName').value.trim();
-  if(!email||!pass){setMsg('Ingresa correo y contraseÃ±a','error');return}
-  if(pass.length<6){setMsg('ContraseÃ±a mÃ­nimo 6 caracteres','error');return}
+  if(!email||!pass){setMsg('Ingresa correo y contraseña','error');return}
+  if(pass.length<6){setMsg('Contraseña mínimo 6 caracteres','error');return}
   const btn=document.getElementById('authBtn');
   btn.innerHTML='<div class="spinner"></div>';btn.disabled=true;
   try{
@@ -516,19 +516,19 @@ async function doAuth(){
       if(!name){setMsg('Ingresa tu nombre','error');btn.innerHTML='Crear cuenta';btn.disabled=false;return}
       const{error}=await sb.auth.signUp({email,password:pass,options:{data:{name}}});
       if(error)throw error;
-      setMsg('Â¡Cuenta creada! Revisa tu correo para confirmar.','success');
+      setMsg('¡Cuenta creada! Revisa tu correo para confirmar.','success');
     }else{
       const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
       if(error)throw error;
       user=data.user;await initApp();return;
     }
   }catch(e){
-    const msg=e.message.includes('invalid_credentials')||e.message.includes('Invalid login')?'Correo o contraseÃ±a incorrectos':
+    const msg=e.message.includes('invalid_credentials')||e.message.includes('Invalid login')?'Correo o contraseña incorrectos':
     e.message.includes('already registered')?'Este correo ya tiene cuenta':
     e.message.includes('Email not confirmed')?'Confirma tu correo antes de entrar':e.message;
     setMsg(msg,'error');
   }
-  btn.innerHTML=authMode==='login'?'Iniciar sesiÃ³n':'Crear cuenta';btn.disabled=false;
+  btn.innerHTML=authMode==='login'?'Iniciar sesión':'Crear cuenta';btn.disabled=false;
 }
 async function doGoogle(){
   const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
@@ -542,7 +542,7 @@ async function doSignOut(){
   window.location.replace(window.location.pathname+'?t='+Date.now());
 }
 
-// â”€â”€â”€ INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── INIT ────────────────────────────────────────────────
 async function initApp(){
   document.getElementById('authScreen').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -592,7 +592,7 @@ function showLogin(){
   document.getElementById('app').style.display='none';
 }
 
-// â”€â”€â”€ TRANSACTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TRANSACTIONS ────────────────────────────────────────
 async function addTx(tx){
   const{data,error}=await sb.from('transactions').insert({...tx,user_id:user.id}).select().single();
   if(!error&&data){txs.unshift(data);return true;}return false;
@@ -602,7 +602,7 @@ async function delTx(id){
   if(!error){txs=txs.filter(t=>t.id!==id);return true;}return false;
 }
 
-// â”€â”€â”€ TARJETAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TARJETAS ─────────────────────────────────────────────
 async function addTarjeta(tc){
   try{
     const{data,error}=await sb.from('tarjetas').insert({...tc,user_id:user.id}).select().single();
@@ -621,27 +621,27 @@ async function delTarjeta(id){
   store.setItem('gs_tarjetas',JSON.stringify(tarjetas));
 }
 
-// â”€â”€â”€ HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── HELPERS ─────────────────────────────────────────────
 function mxn(n){return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits:0}).format(n||0)}
 function monthTxs(){const n=new Date();return txs.filter(t=>{const d=new Date(t.date+'T12:00:00');return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear()});}
 function byCat(list){const r={};list.filter(t=>t.type==='gasto').forEach(t=>{r[t.category]=(r[t.category]||0)+t.amount});return r;}
 function diasPara(dia){if(!dia)return null;const h=new Date(),dm=new Date(h.getFullYear(),h.getMonth()+1,0).getDate();let d=dia-h.getDate();if(d<0)d+=dm;return d;}
 const CATS={
-  'AlimentaciÃ³n':'#f59e0b','Restaurantes':'#f59e0b','Transporte':'#3b82f6','Gasolina':'#3b82f6',
+  'Alimentación':'#f59e0b','Restaurantes':'#f59e0b','Transporte':'#3b82f6','Gasolina':'#3b82f6',
   'Estacionamiento':'#3b82f6','Vivienda':'#8b5cf6','Mantenimiento':'#8b5cf6','Servicios':'#f59e0b',
   'Internet':'#3b82f6','Ropa':'#ec4899','Higiene':'#ec4899','Mascotas':'#8b5cf6','Familia':'#ec4899',
-  'Consulta mÃ©dica':'#ef4444','Medicamentos':'#ef4444','Laboratorio':'#ef4444','Dental':'#ef4444',
-  'Ã“ptica':'#ef4444','Gimnasio':'#10b981','PsicologÃ­a':'#8b5cf6','Deuda TC':'#f97316',
-  'PrÃ©stamo personal':'#f97316','CrÃ©dito automotriz':'#f97316','Hipoteca':'#f97316',
+  'Consulta médica':'#ef4444','Medicamentos':'#ef4444','Laboratorio':'#ef4444','Dental':'#ef4444',
+  'Óptica':'#ef4444','Gimnasio':'#10b981','Psicología':'#8b5cf6','Deuda TC':'#f97316',
+  'Préstamo personal':'#f97316','Crédito automotriz':'#f97316','Hipoteca':'#f97316',
   'INFONAVIT':'#f97316','Impuestos':'#6b7280','IMSS/ISSSTE':'#6b7280',
-  'Entretenimiento':'#10b981','Streaming':'#10b981','MÃºsica':'#10b981','Juegos':'#10b981',
-  'Viajes':'#3b82f6','Hobbies':'#8b5cf6','EducaciÃ³n':'#3b82f6','Cursos':'#3b82f6',
-  'Ãštiles':'#3b82f6','Trabajo':'#6b7280','Software':'#3b82f6','Ahorro':'#10b981',
-  'InversiÃ³n':'#10b981','Seguro':'#6b7280','PensiÃ³n':'#6b7280','DonaciÃ³n':'#ec4899',
+  'Entretenimiento':'#10b981','Streaming':'#10b981','Música':'#10b981','Juegos':'#10b981',
+  'Viajes':'#3b82f6','Hobbies':'#8b5cf6','Educación':'#3b82f6','Cursos':'#3b82f6',
+  'Útiles':'#3b82f6','Trabajo':'#6b7280','Software':'#3b82f6','Ahorro':'#10b981',
+  'Inversión':'#10b981','Seguro':'#6b7280','Pensión':'#6b7280','Donación':'#ec4899',
   'Salario':'#10b981','Freelance':'#10b981','Negocio':'#10b981','Renta ingreso':'#10b981',
-  'InversiÃ³n ingreso':'#10b981','Regalo':'#ec4899','Otros':'#6b7280'
+  'Inversión ingreso':'#10b981','Regalo':'#ec4899','Otros':'#6b7280'
 };
-const BUDGETS={'AlimentaciÃ³n':3000,'Transporte':1500,'Vivienda':9000,'Salud':1000,'Deuda TC':2000,'Entretenimiento':800,'EducaciÃ³n':2000,'Ropa':1000,'Servicios':500,'Ahorro':2000};
+const BUDGETS={'Alimentación':3000,'Transporte':1500,'Vivienda':9000,'Salud':1000,'Deuda TC':2000,'Entretenimiento':800,'Educación':2000,'Ropa':1000,'Servicios':500,'Ahorro':2000};
 const BANK_COLORS={
   'BBVA':'linear-gradient(135deg,#004481,#1464A5)','Banorte':'linear-gradient(135deg,#CC0000,#8B0000)',
   'Santander':'linear-gradient(135deg,#CC0000,#aa0000)','Citibanamex':'linear-gradient(135deg,#003B5C,#0077B6)',
@@ -651,7 +651,7 @@ const BANK_COLORS={
   'Klar':'linear-gradient(135deg,#5046E5,#3730A3)','Liverpool (Visa)':'linear-gradient(135deg,#C8A96E,#8B6914)'
 };
 
-// â”€â”€â”€ NAVIGATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── NAVIGATE ─────────────────────────────────────────────
 function navigate(p){
   page=p;
   document.querySelectorAll('.nav-btn,.mob-btn').forEach(el=>{
@@ -665,7 +665,7 @@ function navigate(p){
 function toggleMenu(){document.getElementById('avatarMenu').classList.toggle('open');}
 document.addEventListener('click',e=>{if(!e.target.closest('.avatar-btn'))document.getElementById('avatarMenu').classList.remove('open');});
 
-// â”€â”€â”€ MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MODAL ────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function checkCustomCat(v){document.getElementById('customCatWrap').style.display=v==='__custom__'?'block':'none';}
@@ -679,7 +679,7 @@ function openTxModal(){
   document.getElementById('txAmount').value='';
   document.getElementById('txDate').value=new Date().toISOString().split('T')[0];
   document.getElementById('txNote').value='';
-  document.getElementById('txCat').value='AlimentaciÃ³n';
+  document.getElementById('txCat').value='Alimentación';
   document.getElementById('customCatWrap').style.display='none';
   setType('gasto');
   openModal('txModal');
@@ -692,14 +692,14 @@ async function saveTx(){
   const customCat=document.getElementById('customCat').value.trim();
   const category=selCat==='__custom__'&&customCat?customCat:selCat;
   const note=document.getElementById('txNote').value.trim();
-  if(!desc||!amount||!date){alert('Completa descripciÃ³n, monto y fecha');return;}
+  if(!desc||!amount||!date){alert('Completa descripción, monto y fecha');return;}
   const btn=event.target;btn.textContent='Guardando...';btn.disabled=true;
   const ok=await addTx({type:txType,description:desc,amount,category,date,note});
   btn.textContent='Guardar';btn.disabled=false;
   if(ok){closeModal('txModal');navigate(page);}
   else alert('Error al guardar. Intenta de nuevo.');
 }
-window.delTxHandler=async id=>{if(!confirm('Â¿Eliminar transacciÃ³n?'))return;await delTx(id);navigate(page);};
+window.delTxHandler=async id=>{if(!confirm('¿Eliminar transacción?'))return;await delTx(id);navigate(page);};
 
 // TC Modal
 function openTcModal(tc=null){
@@ -728,9 +728,9 @@ async function saveTc(){
   closeModal('tcModal');navigate('tarjetas');
 }
 window.editTcHandler=tc=>openTcModal(tc);
-window.delTcHandler=async id=>{if(!confirm('Â¿Eliminar tarjeta?'))return;await delTarjeta(id);navigate('tarjetas');};
+window.delTcHandler=async id=>{if(!confirm('¿Eliminar tarjeta?'))return;await delTarjeta(id);navigate('tarjetas');};
 
-// â”€â”€â”€ PAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PAGES ────────────────────────────────────────────────
 function renderDashboard(){
   const mt=monthTxs();
   const income=mt.filter(t=>t.type==='ingreso').reduce((s,t)=>s+t.amount,0);
@@ -742,10 +742,10 @@ function renderDashboard(){
   return`
   <div class="page-header">
     <div>
-      <div class="page-title">Hola${name?' '+name:''} ðŸ‘‹</div>
-      <div class="page-sub">Resumen del mes Â· datos en la nube</div>
+      <div class="page-title">Hola${name?' '+name:''} 👋</div>
+      <div class="page-sub">Resumen del mes · datos en la nube</div>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="openTxModal()">+ Nueva transacciÃ³n</button>
+    <button class="btn btn-primary btn-sm" onclick="openTxModal()">+ Nueva transacción</button>
   </div>
   <div class="metrics">
     <div class="metric income">
@@ -761,7 +761,7 @@ function renderDashboard(){
     <div class="metric balance">
       <div class="metric-label">Balance</div>
       <div class="metric-value" style="color:${balance>=0?'var(--accent2)':'var(--red)'}">${mxn(balance)}</div>
-      <div class="metric-sub">${balance>=0?'SuperÃ¡vit':'DÃ©ficit'}</div>
+      <div class="metric-sub">${balance>=0?'Superávit':'Déficit'}</div>
     </div>
     <div class="metric savings">
       <div class="metric-label">Tasa ahorro</div>
@@ -773,11 +773,11 @@ function renderDashboard(){
     <div class="card">
       <div class="card-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-        Gastos por categorÃ­a
+        Gastos por categoría
       </div>
       ${Object.keys(cats).length
         ?`<div style="position:relative;height:200px"><canvas id="catChart"></canvas></div>`
-        :'<div class="empty"><p>Agrega gastos para ver la grÃ¡fica</p></div>'}
+        :'<div class="empty"><p>Agrega gastos para ver la gráfica</p></div>'}
     </div>
     <div class="card">
       <div class="card-title">
@@ -799,7 +799,7 @@ function renderDashboard(){
   <div class="grid2">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-        <div class="card-title" style="margin:0">Ãšltimas transacciones</div>
+        <div class="card-title" style="margin:0">Últimas transacciones</div>
         <button class="btn btn-outline" style="padding:5px 12px;font-size:12px;width:auto" onclick="navigate('transactions')">Ver todas</button>
       </div>
       ${txs.slice(0,5).map(t=>`
@@ -809,15 +809,15 @@ function renderDashboard(){
           </div>
           <div style="flex:1;min-width:0">
             <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.description}</div>
-            <div style="font-size:11px;color:var(--muted)">${t.date} Â· ${t.category}</div>
+            <div style="font-size:11px;color:var(--muted)">${t.date} · ${t.category}</div>
           </div>
           <div style="font-size:14px;font-weight:700;color:${t.type==='ingreso'?'var(--green)':'var(--red)'}">
             ${t.type==='ingreso'?'+':'-'}${mxn(t.amount)}
           </div>
-        </div>`).join('')||'<div class="empty"><p>Sin transacciones aÃºn</p></div>'}
+        </div>`).join('')||'<div class="empty"><p>Sin transacciones aún</p></div>'}
     </div>
     <div class="card">
-      <div class="card-title">ðŸ’¡ Recomendaciones IA</div>
+      <div class="card-title">💡 Recomendaciones IA</div>
       ${aiTips(cats,income,expense)}
     </div>
   </div>`;
@@ -828,7 +828,7 @@ function renderTransactions(){
   <div class="page-header">
     <div>
       <div class="page-title">Transacciones</div>
-      <div class="page-sub">Historial completo Â· sincronizado en la nube</div>
+      <div class="page-sub">Historial completo · sincronizado en la nube</div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="openTxModal()">+ Agregar</button>
   </div>
@@ -846,16 +846,16 @@ function renderTransactions(){
 }
 
 function txTable(list){
-  if(!list.length)return'<div class="empty"><p>Sin transacciones. Â¡Agrega la primera!</p></div>';
+  if(!list.length)return'<div class="empty"><p>Sin transacciones. ¡Agrega la primera!</p></div>';
   return`<table class="tbl">
-    <thead><tr><th>DescripciÃ³n</th><th>CategorÃ­a</th><th>Tipo</th><th>Fecha</th><th>Monto</th><th></th></tr></thead>
+    <thead><tr><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Fecha</th><th>Monto</th><th></th></tr></thead>
     <tbody>${list.map(t=>`<tr>
       <td><div style="font-weight:600">${t.description}</div>${t.note?`<div style="font-size:11px;color:var(--muted)">${t.note}</div>`:''}</td>
       <td><span class="chip chip-purple">${t.category}</span></td>
       <td><span class="chip ${t.type==='ingreso'?'chip-green':'chip-red'}">${t.type==='ingreso'?'Ingreso':'Gasto'}</span></td>
       <td style="color:var(--muted);font-size:12px">${t.date}</td>
       <td style="font-weight:700;color:${t.type==='ingreso'?'var(--green)':'var(--red)'}">${t.type==='ingreso'?'+':'-'}${mxn(t.amount)}</td>
-      <td><button onclick="delTxHandler(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">ðŸ—‘</button></td>
+      <td><button onclick="delTxHandler(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">🗑</button></td>
     </tr>`).join('')}</tbody>
   </table>`;
 }
@@ -865,7 +865,7 @@ function renderBudget(){
   return`
   <div class="page-header">
     <div class="page-title">Presupuesto</div>
-    <div class="page-sub">LÃ­mites mensuales por categorÃ­a</div>
+    <div class="page-sub">Límites mensuales por categoría</div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
     ${Object.entries(BUDGETS).map(([cat,limit])=>{
@@ -878,7 +878,7 @@ function renderBudget(){
         </div>
         <div style="font-size:20px;font-weight:700;color:${col};margin-bottom:8px">${mxn(spent)}</div>
         <div class="progress" style="margin-bottom:6px"><div class="progress-fill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div>
-        <div style="font-size:11px;color:var(--muted)">LÃ­mite: ${mxn(limit)} Â· ${over?'<span style="color:var(--red)">Excedido</span>':`Libre: ${mxn(limit-spent)}`}</div>
+        <div style="font-size:11px;color:var(--muted)">Límite: ${mxn(limit)} · ${over?'<span style="color:var(--red)">Excedido</span>':`Libre: ${mxn(limit-spent)}`}</div>
       </div>`;
     }).join('')}
   </div>`;
@@ -889,15 +889,15 @@ function renderReports(){
   return`
   <div class="page-header">
     <div class="page-title">Reportes</div>
-    <div class="page-sub">AnÃ¡lisis visual de tus finanzas</div>
+    <div class="page-sub">Análisis visual de tus finanzas</div>
   </div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title">DistribuciÃ³n este mes</div>
+      <div class="card-title">Distribución este mes</div>
       ${Object.keys(cats).length?'<div style="position:relative;height:240px"><canvas id="pieChart"></canvas></div>':'<div class="empty"><p>Sin datos este mes</p></div>'}
     </div>
     <div class="card">
-      <div class="card-title">Por categorÃ­a</div>
+      <div class="card-title">Por categoría</div>
       ${Object.keys(cats).length?'<div style="position:relative;height:240px"><canvas id="barChart"></canvas></div>':'<div class="empty"><p>Sin datos este mes</p></div>'}
     </div>
   </div>
@@ -915,7 +915,7 @@ function renderTarjetas(){
   return`
   <div class="page-header">
     <div>
-      <div class="page-title">Mis Tarjetas de CrÃ©dito</div>
+      <div class="page-title">Mis Tarjetas de Crédito</div>
       <div class="page-sub">Control de deudas, cortes y fechas de pago</div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="openTcModal()">+ Agregar tarjeta</button>
@@ -923,18 +923,18 @@ function renderTarjetas(){
   ${tarjetas.length?`
     <div class="metrics" style="margin-bottom:16px">
       <div class="metric expense"><div class="metric-label">Deuda total</div><div class="metric-value" style="color:var(--red)">${mxn(totalDeuda)}</div><div class="metric-sub">${tarjetas.length} tarjeta${tarjetas.length!==1?'s':''}</div></div>
-      <div class="metric balance"><div class="metric-label">LÃ­mite total</div><div class="metric-value" style="color:var(--accent2)">${mxn(totalLimite)}</div><div class="metric-sub">Disponible: ${mxn(totalLimite-totalDeuda)}</div></div>
-      <div class="metric ${util>70?'expense':util>40?'savings':'income'}"><div class="metric-label">UtilizaciÃ³n</div><div class="metric-value" style="color:${util>70?'var(--red)':util>40?'var(--amber)':'var(--green)'}">${util}%</div><div class="metric-sub">${util>70?'âš  Alto':util>40?'Moderado':'Saludable'}</div></div>
+      <div class="metric balance"><div class="metric-label">Límite total</div><div class="metric-value" style="color:var(--accent2)">${mxn(totalLimite)}</div><div class="metric-sub">Disponible: ${mxn(totalLimite-totalDeuda)}</div></div>
+      <div class="metric ${util>70?'expense':util>40?'savings':'income'}"><div class="metric-label">Utilización</div><div class="metric-value" style="color:${util>70?'var(--red)':util>40?'var(--amber)':'var(--green)'}">${util}%</div><div class="metric-sub">${util>70?'⚠ Alto':util>40?'Moderado':'Saludable'}</div></div>
     </div>
-    ${proxVenc.map(tc=>{const d=diasPara(tc.dia_pago);return`<div class="alert ${d<=3?'alert-danger':'alert-warning'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg><span><strong>${tc.banco} - ${tc.nombre}:</strong> Pago en ${d} dÃ­a${d!==1?'s':''} (dÃ­a ${tc.dia_pago}) Â· Debe: ${mxn(tc.saldo)} Â· MÃ­nimo: ${mxn(tc.minimo)}</span></div>`;}).join('')}
+    ${proxVenc.map(tc=>{const d=diasPara(tc.dia_pago);return`<div class="alert ${d<=3?'alert-danger':'alert-warning'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg><span><strong>${tc.banco} - ${tc.nombre}:</strong> Pago en ${d} día${d!==1?'s':''} (día ${tc.dia_pago}) · Debe: ${mxn(tc.saldo)} · Mínimo: ${mxn(tc.minimo)}</span></div>`;}).join('')}
     <div class="tc-grid">
       ${tarjetas.map(tc=>{
         const bg=BANK_COLORS[tc.banco]||'linear-gradient(135deg,#4f46e5,#7c3aed)';
         const dp=tc.dia_pago?diasPara(tc.dia_pago):null;
         return`<div class="tc-card" style="background:${bg}" onclick="editTcHandler(${JSON.stringify(tc).replace(/"/g,'&quot;')})">
-          ${dp!==null&&dp<=5?`<div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,.25);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700">âš  ${dp}d</div>`:''}
+          ${dp!==null&&dp<=5?`<div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,.25);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700">⚠ ${dp}d</div>`:''}
           <div style="font-size:11px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:.06em">${tc.banco}</div>
-          <div style="font-size:12px;letter-spacing:.15em;opacity:.7;margin:4px 0">â€¢â€¢â€¢â€¢ ${tc.digitos||'????'}</div>
+          <div style="font-size:12px;letter-spacing:.15em;opacity:.7;margin:4px 0">•••• ${tc.digitos||'????'}</div>
           <div style="font-size:13px;font-weight:600;margin-bottom:12px">${tc.nombre}</div>
           <div style="font-size:11px;opacity:.7">Saldo actual</div>
           <div style="font-size:20px;font-weight:700">${mxn(tc.saldo)}</div>
@@ -949,21 +949,21 @@ function renderTarjetas(){
       <div class="card-title">Detalle de pagos</div>
       <div style="overflow-x:auto">
         <table class="tbl" style="min-width:600px">
-          <thead><tr><th>Banco</th><th>Tarjeta</th><th>Saldo</th><th>MÃ­nimo</th><th>LÃ­mite</th><th>Vence</th><th>CAT%</th><th></th></tr></thead>
+          <thead><tr><th>Banco</th><th>Tarjeta</th><th>Saldo</th><th>Mínimo</th><th>Límite</th><th>Vence</th><th>CAT%</th><th></th></tr></thead>
           <tbody>${tarjetas.map(tc=>{
             const dp=tc.dia_pago?diasPara(tc.dia_pago):null;
             const u=tc.limite>0?Math.round((tc.saldo/tc.limite)*100):0;
             return`<tr>
               <td><strong>${tc.banco}</strong></td>
-              <td>${tc.nombre}<br><span style="font-size:11px;color:var(--muted)">â€¢â€¢â€¢â€¢ ${tc.digitos||'????'}</span></td>
+              <td>${tc.nombre}<br><span style="font-size:11px;color:var(--muted)">•••• ${tc.digitos||'????'}</span></td>
               <td style="color:var(--red);font-weight:600">${mxn(tc.saldo)}<br><span style="font-size:11px;color:var(--muted)">${u}% util.</span></td>
               <td style="color:var(--amber)">${mxn(tc.minimo)}</td>
               <td>${mxn(tc.limite)}</td>
-              <td>${tc.dia_pago?`<span class="chip ${dp!==null&&dp<=5?'chip-red':'chip-amber'}">DÃ­a ${tc.dia_pago}${dp!==null?' ('+dp+'d)':''}</span>`:'-'}</td>
+              <td>${tc.dia_pago?`<span class="chip ${dp!==null&&dp<=5?'chip-red':'chip-amber'}">Día ${tc.dia_pago}${dp!==null?' ('+dp+'d)':''}</span>`:'-'}</td>
               <td>${tc.tasa?tc.tasa+'%':'-'}</td>
               <td style="display:flex;gap:4px">
-                <button onclick="editTcHandler(${JSON.stringify(tc).replace(/"/g,'&quot;')})" style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;color:var(--accent2)">âœï¸</button>
-                <button onclick="delTcHandler(${tc.id})" style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;color:var(--muted)" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">ðŸ—‘</button>
+                <button onclick="editTcHandler(${JSON.stringify(tc).replace(/"/g,'&quot;')})" style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;color:var(--accent2)">✏️</button>
+                <button onclick="delTcHandler(${tc.id})" style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;color:var(--muted)" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">🗑</button>
               </td>
             </tr>`;
           }).join('')}</tbody>
@@ -971,7 +971,7 @@ function renderTarjetas(){
       </div>
     </div>`
   :`<div class="card" style="text-align:center;padding:60px 20px">
-    <div style="font-size:40px;margin-bottom:16px">ðŸ’³</div>
+    <div style="font-size:40px;margin-bottom:16px">💳</div>
     <div style="font-size:17px;font-weight:700;margin-bottom:8px">Sin tarjetas registradas</div>
     <div style="color:var(--muted);font-size:13px;margin-bottom:20px">Agrega tus tarjetas para controlar deudas y fechas de pago</div>
     <button class="btn btn-primary" style="width:auto;margin:0 auto" onclick="openTcModal()">+ Agregar primera tarjeta</button>
@@ -983,7 +983,7 @@ function renderAI(){
   return`
   <div class="page-header">
     <div class="page-title">Asistente IA</div>
-    <div class="page-sub">AnÃ¡lisis inteligente de tus finanzas</div>
+    <div class="page-sub">Análisis inteligente de tus finanzas</div>
   </div>
   <div class="grid2">
     <div class="card">
@@ -991,7 +991,7 @@ function renderAI(){
       <div style="text-align:center;padding:20px 0">
         <div style="font-size:48px;font-weight:700;color:${sp>=20?'var(--green)':sp>=10?'var(--amber)':'var(--red)'}">${sp}%</div>
         <div style="color:var(--muted);margin-top:4px">tasa de ahorro</div>
-        <div style="font-size:15px;font-weight:600;margin-top:12px">${sp>=20?'Â¡Excelente!':sp>=10?'Bien, mejora posible':'AtenciÃ³n requerida'}</div>
+        <div style="font-size:15px;font-weight:600;margin-top:12px">${sp>=20?'¡Excelente!':sp>=10?'Bien, mejora posible':'Atención requerida'}</div>
         <div class="progress" style="margin-top:12px;height:8px"><div class="progress-fill" style="width:${Math.min(sp,100)}%;background:${sp>=20?'var(--green)':sp>=10?'var(--amber)':'var(--red)'}"></div></div>
       </div>
     </div>
@@ -1001,21 +1001,21 @@ function renderAI(){
     </div>
   </div>
   <div class="card" style="border:1px solid rgba(124,111,255,.3);background:rgba(124,111,255,.05)">
-    <div class="card-title">â­ IA Avanzada â€” Solo Premium</div>
+    <div class="card-title">⭐ IA Avanzada — Solo Premium</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px">
-      ${[['ðŸŽ¯ Metas','La IA traza tu plan de ahorro'],['ðŸ“± Alertas WhatsApp','Avisos automÃ¡ticos'],['ðŸ’¬ Chat','Pregunta sobre tus finanzas'],['ðŸ”® Predicciones','Anticipa gastos'],['ðŸ“Š Inversiones','Recomendaciones'],['ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Familia','Hasta 6 miembros']].map(([t,d])=>`<div class="card" style="padding:14px;text-align:center"><div style="font-size:20px;margin-bottom:6px">${t.split(' ')[0]}</div><div style="font-size:12px;font-weight:600;margin-bottom:3px">${t.split(' ').slice(1).join(' ')}</div><div style="font-size:11px;color:var(--muted)">${d}</div></div>`).join('')}
+      ${[['🎯 Metas','La IA traza tu plan de ahorro'],['📱 Alertas WhatsApp','Avisos automáticos'],['💬 Chat','Pregunta sobre tus finanzas'],['🔮 Predicciones','Anticipa gastos'],['📊 Inversiones','Recomendaciones'],['👨‍👩‍👧 Familia','Hasta 6 miembros']].map(([t,d])=>`<div class="card" style="padding:14px;text-align:center"><div style="font-size:20px;margin-bottom:6px">${t.split(' ')[0]}</div><div style="font-size:12px;font-weight:600;margin-bottom:3px">${t.split(' ').slice(1).join(' ')}</div><div style="font-size:11px;color:var(--muted)">${d}</div></div>`).join('')}
     </div>
-    <div style="text-align:center"><button class="btn btn-primary" style="width:auto" onclick="navigate('premium')">â­ Activar Premium â€” $99/mes</button></div>
+    <div style="text-align:center"><button class="btn btn-primary" style="width:auto" onclick="navigate('premium')">⭐ Activar Premium — $99/mes</button></div>
   </div>`;
 }
 
 function renderPremium(){
-  const free=['Registro gastos e ingresos','CategorÃ­as ilimitadas','GrÃ¡ficas bÃ¡sicas','Datos en la nube','1 usuario'];
+  const free=['Registro gastos e ingresos','Categorías ilimitadas','Gráficas básicas','Datos en la nube','1 usuario'];
   const pro=['Todo del plan Free','Chat con IA financiera','Exportar PDF y Excel','Alertas WhatsApp y Email','Predicciones mensuales','Metas de ahorro con IA','6 usuarios compartidos','Soporte prioritario'];
   return`
   <div style="max-width:600px;margin:0 auto">
     <div class="page-header" style="justify-content:center;text-align:center;display:block;margin-bottom:28px">
-      <div style="font-size:36px;margin-bottom:8px">â­</div>
+      <div style="font-size:36px;margin-bottom:8px">⭐</div>
       <div class="page-title">GastoSmart Premium</div>
       <div class="page-sub">Toma el control total de tus finanzas</div>
     </div>
@@ -1023,18 +1023,18 @@ function renderPremium(){
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Plan Free</div>
         <div style="font-size:32px;font-weight:700;margin-bottom:16px">$0 <span style="font-size:14px;color:var(--muted);font-weight:400">/ siempre</span></div>
-        ${free.map(f=>`<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--green)">âœ“</span>${f}</div>`).join('')}
+        ${free.map(f=>`<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--green)">✓</span>${f}</div>`).join('')}
         <div style="text-align:center;margin-top:16px"><span class="chip chip-green" style="font-size:13px;padding:6px 16px">Plan Actual</span></div>
       </div>
       <div class="card" style="border-color:rgba(124,111,255,.4);background:rgba(124,111,255,.06)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase">Premium</span>
-          <span class="chip chip-purple">MÃS POPULAR</span>
+          <span class="chip chip-purple">MÁS POPULAR</span>
         </div>
         <div style="font-size:32px;font-weight:700;color:var(--accent2);margin-bottom:4px">$99 <span style="font-size:14px;color:var(--muted);font-weight:400">/ mes</span></div>
         <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Cancela cuando quieras</div>
-        ${pro.map(f=>`<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--green)">âœ“</span>${f}</div>`).join('')}
-        <button class="btn btn-primary" style="margin-top:16px">âš¡ Comenzar 7 dÃ­as gratis</button>
+        ${pro.map(f=>`<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--green)">✓</span>${f}</div>`).join('')}
+        <button class="btn btn-primary" style="margin-top:16px">⚡ Comenzar 7 días gratis</button>
       </div>
     </div>
     <div class="alert alert-info" style="margin-top:14px">
@@ -1053,7 +1053,7 @@ function renderSettings(){
       <div class="page-sub">Personaliza tu experiencia</div>
     </div>
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">ðŸ‘¤ Perfil</div>
+      <div class="card-title">👤 Perfil</div>
       <label class="field-label">Nombre</label>
       <input id="settingsName" class="field-input" value="${name}">
       <label class="field-label">Email</label>
@@ -1061,8 +1061,8 @@ function renderSettings(){
       <button class="btn btn-primary btn-sm" style="width:auto" onclick="saveProfile()">Guardar cambios</button>
     </div>
     <div class="card">
-      <div class="card-title">ðŸšª SesiÃ³n</div>
-      <button class="btn" style="background:rgba(255,107,122,.12);border:1px solid rgba(255,107,122,.25);color:var(--red);width:auto;padding:8px 16px;font-size:13px;border-radius:9px" onclick="doSignOut()">Cerrar sesiÃ³n</button>
+      <div class="card-title">🚪 Sesión</div>
+      <button class="btn" style="background:rgba(255,107,122,.12);border:1px solid rgba(255,107,122,.25);color:var(--red);width:auto;padding:8px 16px;font-size:13px;border-radius:9px" onclick="doSignOut()">Cerrar sesión</button>
     </div>
   </div>`;
 }
@@ -1075,26 +1075,26 @@ async function saveProfile(){
   user.user_metadata.name=name;
   const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('avatarInitials').textContent=initials;
-  alert('âœ“ Perfil actualizado');
+  alert('✓ Perfil actualizado');
 }
 
 const PAGES={dashboard:renderDashboard,transactions:renderTransactions,budget:renderBudget,reports:renderReports,tarjetas:renderTarjetas,ai:renderAI,premium:renderPremium,settings:renderSettings};
 
 function getCatEmoji(cat){
-  const map={'AlimentaciÃ³n':'ðŸ›’','Restaurantes':'ðŸ½ï¸','Transporte':'ðŸšŒ','Gasolina':'â›½','Vivienda':'ðŸ ','Ropa':'ðŸ‘•','Salud':'ðŸ’Š','Consulta mÃ©dica':'ðŸ¥','Entretenimiento':'ðŸŽ®','Streaming':'ðŸ“º','Viajes':'âœˆï¸','EducaciÃ³n':'ðŸ“š','Ahorro':'ðŸ’°','InversiÃ³n':'ðŸ“ˆ','Salario':'ðŸ’µ','Freelance':'ðŸ’»','Negocio':'ðŸª','Deuda TC':'ðŸ’³','Otros':'ðŸ“¦'};
-  return map[cat]||'ðŸ“¦';
+  const map={'Alimentación':'🛒','Restaurantes':'🍽️','Transporte':'🚌','Gasolina':'⛽','Vivienda':'🏠','Ropa':'👕','Salud':'💊','Consulta médica':'🏥','Entretenimiento':'🎮','Streaming':'📺','Viajes':'✈️','Educación':'📚','Ahorro':'💰','Inversión':'📈','Salario':'💵','Freelance':'💻','Negocio':'🏪','Deuda TC':'💳','Otros':'📦'};
+  return map[cat]||'📦';
 }
 
 function aiTips(cats,income,expense){
   const tips=[];
   const ratio=income>0?expense/income:0;
   const sp=income>0?Math.round(((income-expense)/income)*100):0;
-  if(ratio>.85)tips.push({t:'warning',m:'Gastas mÃ¡s del 85% de tus ingresos. Considera reducir gastos no esenciales.'});
-  if((cats['AlimentaciÃ³n']||0)>2500)tips.push({t:'warning',m:'AlimentaciÃ³n estÃ¡ sobre el promedio. Cocinar en casa puede reducirlo 40%.'});
-  if(sp<10&&income>0)tips.push({t:'danger',m:'Tu ahorro estÃ¡ bajo. La regla 50/30/20 recomienda al menos 20%.'});
-  if(tips.length===0)tips.push({t:'success',m:'Â¡Excelentes finanzas este mes! EstÃ¡s en parÃ¡metros saludables.'});
-  tips.push({t:'info',m:'Activa Premium para anÃ¡lisis predictivo y chat con IA financiera.'});
-  const icons={warning:'âš ï¸',danger:'ðŸš¨',success:'âœ…',info:'ðŸ’¡'};
+  if(ratio>.85)tips.push({t:'warning',m:'Gastas más del 85% de tus ingresos. Considera reducir gastos no esenciales.'});
+  if((cats['Alimentación']||0)>2500)tips.push({t:'warning',m:'Alimentación está sobre el promedio. Cocinar en casa puede reducirlo 40%.'});
+  if(sp<10&&income>0)tips.push({t:'danger',m:'Tu ahorro está bajo. La regla 50/30/20 recomienda al menos 20%.'});
+  if(tips.length===0)tips.push({t:'success',m:'¡Excelentes finanzas este mes! Estás en parámetros saludables.'});
+  tips.push({t:'info',m:'Activa Premium para análisis predictivo y chat con IA financiera.'});
+  const icons={warning:'⚠️',danger:'🚨',success:'✅',info:'💡'};
   const colors={warning:'alert-warning',danger:'alert-danger',success:'',info:'alert-info'};
   return tips.map(t=>`<div class="alert ${colors[t.t]}" style="${t.t==='success'?'background:rgba(45,212,160,.08);border:1px solid rgba(45,212,160,.2);color:#5fe8c0':''}"><span>${icons[t.t]}</span><span>${t.m}</span></div>`).join('');
 }
@@ -1129,17 +1129,17 @@ function afterRender(p){
   }
 }
 
-// â”€â”€â”€ START â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Auto-actualizaciÃ³n: detecta nueva versiÃ³n y limpia cachÃ© automÃ¡ticamente
+// ─── START ────────────────────────────────────────────────
+// Auto-actualización: detecta nueva versión y limpia caché automáticamente
 (function(){
-  // Fuente Ãºnica de versiÃ³n: la etiqueta <meta name="app-version">.
-  // actualizar.bat la cambia en cada deploy, asÃ­ nunca se desincroniza.
+  // Fuente única de versión: la etiqueta <meta name="app-version">.
+  // actualizar.bat la cambia en cada deploy, así nunca se desincroniza.
   var meta = document.querySelector('meta[name="app-version"]');
   var BUILD = meta ? meta.getAttribute('content') : '0';
   var stored = localStorage.getItem('gs_version');
   if (stored && stored !== BUILD) {
-    // Nueva versiÃ³n detectada. Conservamos la sesiÃ³n de Supabase (no cerramos sesiÃ³n).
-    // Si algÃºn dÃ­a necesitas limpiar datos cacheados incompatibles, hazlo aquÃ­.
+    // Nueva versión detectada. Conservamos la sesión de Supabase (no cerramos sesión).
+    // Si algún día necesitas limpiar datos cacheados incompatibles, hazlo aquí.
   }
   try { localStorage.setItem('gs_version', BUILD); } catch(e){}
   start();
