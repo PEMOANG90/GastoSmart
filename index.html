@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GastoSmart">
 <meta name="theme-color" content="#0e1117">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230e1117'/><rect width='100' height='100' rx='22' fill='url(%23g)' opacity='.15'/><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%237c6fff'/><stop offset='1' stop-color='%232dd4a0'/></linearGradient></defs></svg>">
+<link rel="manifest" href="/manifest.json">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -382,7 +382,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
     <button class="nav-item" data-page="premium"><span class="ni" style="color:#ffb340"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Premium<span class="badge-premium">PRO</span></button>
     <button class="nav-item" data-page="settings"><span class="ni" style="color:#6b74a0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Ajustes</button>
   </aside>
-  <main class="main" id="mainContent"><div class="loading"><div class="spinner"></div>Conectando...</div></main>
+  <main class="main" id="mainContent"></main>
 </div>
 
 <nav class="mobile-nav" id="mobileNav" style="display:none">
@@ -486,13 +486,19 @@ async function signOut(){await sb.auth.signOut();location.reload()}
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
 async function startApp(){
+  // Mostrar login de inmediato — nunca se queda cargando
   showAuth();
+  // Verificar sesión en segundo plano sin bloquear UI
   try{
-    const sessionPromise=sb.auth.getSession();
-    const timeoutPromise=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),4000));
-    const{data:{session}}=await Promise.race([sessionPromise,timeoutPromise]);
-    if(session?.user){currentUser=session.user;await initApp()}
-  }catch(e){console.log('Auth timeout o error:',e.message)}
+    const{data:{session}}=await sb.auth.getSession();
+    if(session?.user){
+      currentUser=session.user;
+      await initApp();
+    }
+  }catch(e){
+    // Si falla, el usuario ya ve el login y puede entrar
+    console.log('Sin sesión activa');
+  }
 }
 
 sb.auth.onAuthStateChange(async(event,session)=>{
@@ -822,28 +828,10 @@ document.addEventListener('click',()=>document.getElementById('avatarMenu').clas
 document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>navigate(el.dataset.page)));
 startApp();
 
-// PWA Service Worker
-if('serviceWorker' in navigator){
-  window.addEventListener('load', async()=>{
-    try{
-      // Inline SW as blob for GitHub Pages / Netlify compatibility
-      const swCode = `
-const CACHE='gastosmart-v2';
-const ASSETS=['/'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
-self.addEventListener('fetch',e=>{
-  if(e.request.url.includes('supabase.co'))return;
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-    const clone=res.clone();
-    caches.open(CACHE).then(c=>c.put(e.request,clone));
-    return res;
-  })));
-});`;
-      const blob=new Blob([swCode],{type:'application/javascript'});
-      const swUrl=URL.createObjectURL(blob);
-      await navigator.serviceWorker.register(swUrl);
-      console.log('GastoSmart PWA lista');
-    }catch(e){console.log('SW no disponible:',e)}
+// PWA - instalable en Chrome y Safari móvil
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
   });
 }
 
