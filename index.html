@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260528164403">
+<meta name="app-version" content="20260528171156">
 <title>GastoSmart 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -481,7 +481,7 @@ const store=isEdge?sessionStorage:localStorage;
 
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{
   storage:store,storageKey:'gs_auth',
-  flowType:'implicit',detectSessionInUrl:true,
+  flowType:'pkce',detectSessionInUrl:true,
   persistSession:!isEdge,autoRefreshToken:true
 }});
 
