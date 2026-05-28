@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
 <html lang="es" style="color-scheme:dark">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +6,6 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <meta name="build" content="1779952245">
-=======
-<html lang="es">
-<head>
-<meta charset="UTF-8">
->>>>>>> a722fa6d0a9ea36ac3a73fcaf392ccf45da0601f
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -52,6 +46,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
+html,body{background:#080c18!important;color-scheme:dark only}
 :root{
   --bg:#080c18;--surface:#0f1629;--surface2:#151e35;--surface3:#1c2640;
   --border:rgba(255,255,255,0.07);--border2:rgba(124,111,255,0.2);
@@ -71,7 +66,7 @@
 }
 /* Tema oscuro siempre — más premium */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;overflow-x:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#080c18!important;color:#eef0ff!important;min-height:100vh;font-size:14px;overflow-x:hidden;display:flex;flex-direction:column;color-scheme:dark}
 
 /* ANIMATED BG */
 
@@ -103,11 +98,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(8,12,24,.92);backdrop-filt
 .layout{display:flex;min-height:calc(100vh - 62px);position:relative;z-index:1;flex:1}
 .sidebar{width:225px;flex-shrink:0;background:rgba(8,12,24,.8);backdrop-filter:blur(20px);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto}
 .nav-section{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;padding:14px 12px 6px;opacity:.7}
-<<<<<<< HEAD
 .nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600;color:#8892c8;border:none;background:none;width:100%;text-align:left;transition:all var(--transition);position:relative}
-=======
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);border:none;background:none;width:100%;text-align:left;transition:all var(--transition);position:relative}
->>>>>>> a722fa6d0a9ea36ac3a73fcaf392ccf45da0601f
 .nav-item:hover{background:var(--surface2);color:var(--text);transform:translateX(3px)}
 .nav-item:hover .ni{transform:scale(1.15) rotate(-5deg);filter:drop-shadow(0 0 6px currentColor)}
 .nav-item.active{background:linear-gradient(135deg,rgba(124,111,255,.18),rgba(124,111,255,.08));color:var(--accent2);border:1px solid rgba(124,111,255,.18)}
@@ -242,7 +233,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 .tx-amount{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-left:auto;white-space:nowrap}
 
 /* AUTH */
-#authScreen{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 30% 20%,rgba(124,111,255,.15),transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(45,212,160,.1),transparent 60%),var(--bg)}
+#authScreen{position:fixed;inset:0;background:#080c18!important;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
 .auth-card{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:38px;width:100%;max-width:400px;box-shadow:0 40px 100px rgba(0,0,0,.5)}
 .auth-logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#7c6fff,#2dd4a0);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
 .auth-logo svg{width:26px;height:26px;color:#fff}
@@ -728,22 +719,33 @@ document.getElementById('authSubmit').onclick=async()=>{
   const password=document.getElementById('authPassword').value;
   const name=document.getElementById('authName').value.trim();
   if(!email||!password){showAuthError('Ingresa tu correo y contraseña');return}
-  const btn=document.getElementById('authSubmit');btn.textContent='Procesando...';btn.disabled=true;
+  if(password.length<6){showAuthError('La contraseña debe tener mínimo 6 caracteres');return}
+  const btn=document.getElementById('authSubmit');
+  btn.innerHTML='<div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Procesando...';
+  btn.disabled=true;
+  // Timeout de 10 segundos
+  const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Sin conexión. Verifica tu internet.')),10000));
   try{
     if(authMode==='register'){
-      if(!name){showAuthError('Ingresa tu nombre');btn.textContent='Crear cuenta';btn.disabled=false;return}
-      const{error}=await sb.auth.signUp({email,password,options:{data:{name}}});
+      if(!name){showAuthError('Ingresa tu nombre');btn.innerHTML='Crear cuenta';btn.disabled=false;return}
+      const{error}=await Promise.race([sb.auth.signUp({email,password,options:{data:{name}}}),timeout]);
       if(error)throw error;
-      showAuthSuccess('Cuenta creada. Revisa tu correo para confirmar.');
+      showAuthSuccess('¡Cuenta creada! Revisa tu correo para confirmar.');
     } else {
-      const{error}=await sb.auth.signInWithPassword({email,password});
+      const{data,error}=await Promise.race([sb.auth.signInWithPassword({email,password}),timeout]);
       if(error)throw error;
+      if(data?.user){currentUser=data.user;await initApp();return}
     }
   }catch(e){
-    const msg=e.message.includes('Invalid login')?'Correo o contraseña incorrectos':e.message.includes('already registered')?'Este correo ya tiene cuenta':e.message;
+    const msg=e.message.includes('Invalid login')||e.message.includes('invalid_credentials')?'Correo o contraseña incorrectos':
+              e.message.includes('already registered')||e.message.includes('already been registered')?'Este correo ya tiene una cuenta':
+              e.message.includes('Email not confirmed')?'Confirma tu correo antes de entrar':
+              e.message.includes('Sin conexión')?e.message:
+              'Error al conectar. Intenta de nuevo.';
     showAuthError(msg);
   }
-  btn.textContent=authMode==='login'?'Iniciar sesión':'Crear cuenta';btn.disabled=false;
+  btn.innerHTML=authMode==='login'?'Iniciar sesión':'Crear cuenta';
+  btn.disabled=false;
 };
 document.getElementById('authGoogle').onclick=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});if(error)showAuthError(error.message)};
 async function signOut(){
@@ -756,7 +758,6 @@ async function signOut(){
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
-<<<<<<< HEAD
 // CACHE BUSTER - fuerza siempre la versión más reciente
 (function(){
   const BUILD='1779952245';
@@ -769,8 +770,6 @@ function showAuth(){document.getElementById('authScreen').style.display='flex';d
   sessionStorage.setItem('gs_build',BUILD);
 })();
 
-=======
->>>>>>> a722fa6d0a9ea36ac3a73fcaf392ccf45da0601f
 async function startApp(){
   // En Edge: siempre mostrar login — evita sesión persistente bloqueada
   if(isEdge){
