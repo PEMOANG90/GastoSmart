@@ -12,13 +12,20 @@ git --version >nul 2>&1
 if %errorlevel% neq 0 (
     color 0C
     echo  ERROR: Git no instalado. Descarga en git-scm.com
-    pause & exit /b 1
+    pause ^& exit /b 1
 )
 
 if not exist "%~dp0index.html" (
     color 0C
     echo  ERROR: No se encontro index.html
-    pause & exit /b 1
+    pause ^& exit /b 1
+)
+
+if not exist "%~dp0vercel.json" (
+    color 0E
+    echo  AVISO: No se encontro vercel.json en esta carpeta.
+    echo  El control de cache NO se desplegara. Copialo aqui y vuelve a correr.
+    echo.
 )
 
 echo  [1/3] Verificando archivos... OK
@@ -29,12 +36,12 @@ git config user.name "Pedro Molina" >nul 2>&1
 git branch -m master main >nul 2>&1
 git branch --set-upstream-to=origin/main main >nul 2>&1
 
-REM Inyectar timestamp unico (YYYYMMDDHHMMSS) para versionar el deploy
+REM Timestamp unico YYYYMMDDHHMMSS para versionar el deploy
 set TS=%date:~6,4%%date:~3,2%%date:~0,2%%time:~0,2%%time:~3,2%%time:~6,2%
 set TS=%TS: =0%
 
-REM Reemplazo UTF-8 sin BOM (preserva emojis y acentos) y acepta cualquier longitud de version
-powershell -NoProfile -Command "$p='%~dp0index.html'; $c=[System.IO.File]::ReadAllText($p); $c=[regex]::Replace($c, 'name=\"app-version\" content=\"[0-9]+\"', 'name=\"app-version\" content=\"%TS%\"'); $u=New-Object System.Text.UTF8Encoding($false); [System.IO.File]::WriteAllText($p,$c,$u)"
+REM Inyecta la version en la meta tag (acepta cualquier longitud, preserva UTF-8)
+powershell -NoProfile -Command "(Get-Content '%~dp0index.html' -Raw) -replace 'name=\"app-version\" content=\"[0-9]+\"','name=\"app-version\" content=\"%TS%\"' | Set-Content '%~dp0index.html' -NoNewline -Encoding UTF8"
 
 echo  Version inyectada: %TS%
 echo  [2/3] Subiendo a GitHub...
@@ -54,8 +61,6 @@ echo.
 echo  [3/3] Listo!
 echo  ==========================================
 echo   App actualizada - version %TS%
-echo   Usuarios veran la nueva version
-echo   automaticamente sin borrar cache
 echo  ==========================================
 echo.
 echo  https://gasto-smart-six.vercel.app
