@@ -588,7 +588,7 @@ const SUPABASE_URL='https://ekoojdgqizzdbcqkxgln.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb29qZGdxaXp6ZGJjcWt4Z2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTAwMjksImV4cCI6MjA5NTQ4NjAyOX0.Ya1IqJuccG7D0nEfFeZ1ZXBSAWAyzIHhDYkfutZpkzI';
 // Nota: La anon key es segura para uso público — el acceso a datos está protegido por RLS en Supabase
 // Almacenamiento inteligente — detecta el navegador y usa la mejor estrategia
-const isEdge = /Edg\//.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+const isEdge = /Edg\//.test(navigator.userAgent); // Edge siempre incluye Edg/ en su user agent
 
 // En Edge usamos sessionStorage (dura la sesión del navegador, se borra al cerrar)
 // En Chrome/Safari/Firefox usamos localStorage (persiste entre visitas)
@@ -628,7 +628,14 @@ window.fetch = function(url, opts){
   }
   return _origFetch(url, opts);
 };
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:safeStorage,storageKey:'gastosmart_auth',flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{
+  storage:safeStorage,
+  storageKey:'gastosmart_auth',
+  flowType:'implicit',
+  detectSessionInUrl:true,
+  persistSession:!isEdge, // Edge: no persistir — evita problemas de caché
+  autoRefreshToken:true
+}});
 
 const CATS={
   'Alimentación':{color:'#f59e0b',bg:'rgba(245,158,11,.12)'},'Restaurantes':{color:'#f59e0b',bg:'rgba(245,158,11,.12)'},
