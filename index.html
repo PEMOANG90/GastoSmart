@@ -458,6 +458,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 <script>
 const SUPABASE_URL='https://ekoojdgqizzdbcqkxgln.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb29qZGdxaXp6ZGJjcWt4Z2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTAwMjksImV4cCI6MjA5NTQ4NjAyOX0.Ya1IqJuccG7D0nEfFeZ1ZXBSAWAyzIHhDYkfutZpkzI';
+// Nota: La anon key es segura para uso público — el acceso a datos está protegido por RLS en Supabase
 const safeStorage=(()=>{try{localStorage.setItem('gs_t','1');localStorage.removeItem('gs_t');return localStorage}catch(e){const s={};return{getItem:k=>s[k]||null,setItem:(k,v)=>{s[k]=v},removeItem:k=>{delete s[k]}}}})();
 
 // Interceptar fetch de Supabase para usar proxy Netlify en Edge
@@ -522,22 +523,38 @@ document.getElementById('authSubmit').onclick=async()=>{
 };
 document.getElementById('authGoogle').onclick=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});if(error)showAuthError(error.message)};
 async function signOut(){
-  try{
-    await sb.auth.signOut();
-  }catch(e){}
-  // Clear everything
-  try{localStorage.clear()}catch(e){}
-  try{sessionStorage.clear()}catch(e){}
-  try{safeStorage.removeItem('gastosmart_auth')}catch(e){}
-  // Show auth screen directly without reload
+  // Cerrar sesión en Supabase
+  try{ await sb.auth.signOut(); }catch(e){}
+  // Limpiar estado local
   currentUser=null;
   txs=[];
+  // Limpiar storage de todas las formas posibles
+  try{ safeStorage.removeItem('gastosmart_auth'); }catch(e){}
+  try{ localStorage.clear(); }catch(e){}
+  try{ sessionStorage.clear(); }catch(e){}
+  // Limpiar cookies relacionadas
+  try{
+    document.cookie.split(';').forEach(c=>{
+      document.cookie=c.replace(/^ +/,'').replace(/=.*/,'=;expires='+new Date().toUTCString()+';path=/');
+    });
+  }catch(e){}
+  // Mostrar pantalla de login directamente
   document.getElementById('authScreen').style.display='flex';
   document.getElementById('appNav').style.display='none';
   document.getElementById('appLayout').style.display='none';
   document.getElementById('mobileNav').style.display='none';
   document.getElementById('authEmail').value='';
   document.getElementById('authPassword').value='';
+  document.getElementById('mainContent').innerHTML='';
+  // Edge fix: forzar recarga si persiste la sesión
+  setTimeout(async()=>{
+    try{
+      const{data}=await sb.auth.getSession();
+      if(data.session){
+        window.location.replace(window.location.pathname+'?signout='+Date.now());
+      }
+    }catch(e){}
+  },500);
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
