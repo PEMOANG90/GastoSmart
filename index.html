@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="es" style="color-scheme:dark">
 <head>
 <meta charset="UTF-8">
@@ -6,6 +7,11 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <meta name="build" content="1779952245">
+=======
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+>>>>>>> a722fa6d0a9ea36ac3a73fcaf392ccf45da0601f
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -97,7 +103,11 @@ nav{position:sticky;top:0;z-index:100;background:rgba(8,12,24,.92);backdrop-filt
 .layout{display:flex;min-height:calc(100vh - 62px);position:relative;z-index:1;flex:1}
 .sidebar{width:225px;flex-shrink:0;background:rgba(8,12,24,.8);backdrop-filter:blur(20px);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto}
 .nav-section{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;padding:14px 12px 6px;opacity:.7}
+<<<<<<< HEAD
 .nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600;color:#8892c8;border:none;background:none;width:100%;text-align:left;transition:all var(--transition);position:relative}
+=======
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);border:none;background:none;width:100%;text-align:left;transition:all var(--transition);position:relative}
+>>>>>>> a722fa6d0a9ea36ac3a73fcaf392ccf45da0601f
 .nav-item:hover{background:var(--surface2);color:var(--text);transform:translateX(3px)}
 .nav-item:hover .ni{transform:scale(1.15) rotate(-5deg);filter:drop-shadow(0 0 6px currentColor)}
 .nav-item.active{background:linear-gradient(135deg,rgba(124,111,255,.18),rgba(124,111,255,.08));color:var(--accent2);border:1px solid rgba(124,111,255,.18)}
@@ -746,6 +756,7 @@ async function signOut(){
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
+<<<<<<< HEAD
 // CACHE BUSTER - fuerza siempre la versión más reciente
 (function(){
   const BUILD='1779952245';
@@ -758,6 +769,8 @@ function showAuth(){document.getElementById('authScreen').style.display='flex';d
   sessionStorage.setItem('gs_build',BUILD);
 })();
 
+=======
+>>>>>>> a722fa6d0a9ea36ac3a73fcaf392ccf45da0601f
 async function startApp(){
   // En Edge: siempre mostrar login — evita sesión persistente bloqueada
   if(isEdge){
