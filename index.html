@@ -437,7 +437,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
   </div>
 </nav>
 
-<div class="layout" id="appLayout" style="display:none">
+<div class="layout" id="appLayout">
   <aside class="sidebar">
     <div class="nav-section">Principal</div>
     <button class="nav-item active" data-page="dashboard"><span class="ni" style="color:#a78bfa"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span>Dashboard<span class="nav-dot"></span></button>
@@ -711,7 +711,7 @@ function icon(name,size=16){return`<svg xmlns="http://www.w3.org/2000/svg" width
 // AUTH
 let authMode='login';
 document.getElementById('tabLogin').onclick=()=>{authMode='login';document.getElementById('tabLogin').classList.add('active');document.getElementById('tabRegister').classList.remove('active');document.getElementById('authSubmit').textContent='Iniciar sesión';document.getElementById('authNameGroup').style.display='none';clearAuthMsg()};
-document.getElementById('tabRegister').onclick=()=>{authMode='register';document.getElementById('tabRegister').classList.add('active');document.getElementById('tabLogin').classList.remove('active');document.getElementById('authSubmit').textContent='Crear cuenta';document.getElementById('authNameGroup').style.display='block';clearAuthMsg()};
+document.getElementById('tabRegister').onclick=()=>{authMode='register';document.getElementById('tabRegister').classList.add('active');document.getElementById('tabLogin').classList.remove('active');document.getElementById('authSubmit').textContent='Crear cuenta';document.getElementById('authNameGroup').style.display='flex';clearAuthMsg()};
 function showAuthError(msg){const el=document.getElementById('authError');document.getElementById('authErrorMsg').textContent=msg;el.style.display='flex';document.getElementById('authSuccess').style.display='none'}
 function showAuthSuccess(msg){const el=document.getElementById('authSuccess');document.getElementById('authSuccessMsg').textContent=msg;el.style.display='flex';document.getElementById('authError').style.display='none'}
 function clearAuthMsg(){document.getElementById('authError').style.display='none';document.getElementById('authSuccess').style.display='none'}
@@ -801,8 +801,8 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 
 async function initApp(){
   document.getElementById('authScreen').style.display='none';
-  document.getElementById('appWrapper').style.display='block';
-  document.getElementById('mobileNav').style.display='block';
+  document.getElementById('appWrapper').style.display='flex';
+  document.getElementById('mobileNav').style.display='flex';
   const name=currentUser.user_metadata?.name||currentUser.email||'Usuario';
   const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('avatarInitials').textContent=initials;
@@ -1141,7 +1141,7 @@ document.getElementById('saveTransaction').addEventListener('click',async()=>{
 window.handleDelete=async id=>{if(!confirm('¿Eliminar esta transacción?'))return;await deleteTransaction(id);navigate(page)};
 function closeMobMenu(){document.getElementById('mobMenuPanel').style.display='none'}
 function navAndClose(p){closeMobMenu();navigate(p)}
-document.getElementById('mobMenuBtn').addEventListener('click',e=>{e.stopPropagation();document.getElementById('mobMenuPanel').style.display='block'});
+document.getElementById('mobMenuBtn').addEventListener('click',e=>{e.stopPropagation();document.getElementById('mobMenuPanel').style.display='flex'});
 document.getElementById('avatarBtn').addEventListener('click',e=>{e.stopPropagation();document.getElementById('avatarMenu').classList.toggle('open')});
 document.addEventListener('click',()=>document.getElementById('avatarMenu').classList.remove('open'));
 document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>navigate(el.dataset.page)));
@@ -1260,7 +1260,7 @@ function renderTarjetas(){
   const isEdge = /Edg\//.test(navigator.userAgent);
   const dismissed = localStorage.getItem('gs_edge_dismissed');
   if(isEdge && !dismissed){
-    document.getElementById('edge-tip').style.display='block';
+    document.getElementById('edge-tip').style.display='flex';
     // Ajustar padding del auth screen para que no tape el banner
     setTimeout(()=>{
       const tip = document.getElementById('edge-tip');
