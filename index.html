@@ -630,13 +630,7 @@ const safeStorage = (() => {
 })();
 
 // Interceptar fetch de Supabase para usar proxy Netlify en Edge
-const _origFetch = window.fetch.bind(window);
-window.fetch = function(url, opts){
-  if(typeof url === 'string' && url.includes('ekoojdgqizzdbcqkxgln.supabase.co')){
-    url = url.replace('https://ekoojdgqizzdbcqkxgln.supabase.co', window.location.origin+'/api/supabase');
-  }
-  return _origFetch(url, opts);
-};
+// Conexión directa a Supabase — Vercel no necesita proxy
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{
   storage:safeStorage,
   storageKey:'gastosmart_auth',
