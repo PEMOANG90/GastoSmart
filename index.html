@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260528115158">
+<meta name="app-version" content="20260528160549">
 <title>GastoSmart 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -535,11 +535,15 @@ async function doGoogle(){
   if(error)setMsg(error.message,'error');
 }
 async function doSignOut(){
-  try{await sb.auth.signOut()}catch(e){}
+  // scope:'local' cierra la sesion al instante, sin llamada de red (no se cuelga)
+  try{await sb.auth.signOut({scope:'local'})}catch(e){}
+  try{localStorage.removeItem('gs_auth')}catch(e){}
+  try{sessionStorage.removeItem('gs_auth')}catch(e){}
   try{store.clear()}catch(e){}
   try{localStorage.clear()}catch(e){}
   user=null;txs=[];tarjetas=[];
-  window.location.replace(window.location.pathname+'?t='+Date.now());
+  // Recarga a una URL limpia (sin hash de OAuth ni parametros)
+  window.location.replace(window.location.origin+window.location.pathname);
 }
 
 // ─── INIT ────────────────────────────────────────────────
