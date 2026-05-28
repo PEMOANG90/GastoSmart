@@ -2,9 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>GastoSmart 2026</title>
+<meta name="version" content="3.1">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -486,9 +490,12 @@ async function signOut(){
   try{await sb.auth.signOut()}catch(e){}
   currentUser=null;
   txs=[];
-  // Force clear session and reload
   safeStorage.removeItem('gastosmart_auth');
-  window.location.href=window.location.href.split('#')[0];
+  // Clear ALL storage
+  try{localStorage.clear()}catch(e){}
+  try{sessionStorage.clear()}catch(e){}
+  // Hard reload bypassing cache
+  window.location.replace(window.location.pathname+'?v='+Date.now());
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
