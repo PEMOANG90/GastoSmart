@@ -17,6 +17,16 @@
 <meta name="theme-color" content="#0e1117">
 <link rel="manifest" href="/manifest.json">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+#edge-tip{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#1e2640,#252e4d);border-bottom:1px solid rgba(124,111,255,.3);padding:14px 20px;font-family:'Plus Jakarta Sans',sans-serif}
+#edge-tip-inner{max-width:700px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#edge-tip .et-icon{font-size:28px;flex-shrink:0}
+#edge-tip .et-text{flex:1;min-width:200px}
+#edge-tip .et-title{font-size:14px;font-weight:700;color:#e8eaf6;margin-bottom:3px}
+#edge-tip .et-sub{font-size:12px;color:#7986b8;line-height:1.5}
+#edge-tip .et-btn{background:linear-gradient(135deg,#7c6fff,#2dd4a0);color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+#edge-tip .et-close{background:none;border:none;color:#7986b8;font-size:20px;cursor:pointer;padding:4px;flex-shrink:0}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
@@ -288,6 +298,22 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
 
+<!-- Banner amigable para usuarios de Edge -->
+<div id="edge-tip">
+  <div id="edge-tip-inner">
+    <span class="et-icon">💡</span>
+    <div class="et-text">
+      <div class="et-title">Para la mejor experiencia usa Google Chrome</div>
+      <div class="et-sub">Tu navegador actual (Edge) puede tener limitaciones con algunas funciones. Chrome es gratuito y GastoSmart funciona perfecto en él.</div>
+    </div>
+    <a href="https://www.google.com/chrome/" target="_blank" class="et-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Descargar Chrome gratis
+    </a>
+    <button class="et-close" onclick="document.getElementById('edge-tip').style.display='none';localStorage.setItem('gs_edge_dismissed','1')">✕</button>
+  </div>
+</div>
+
 <!-- AUTH -->
 <div id="authScreen">
   <div class="auth-card">
@@ -487,15 +513,22 @@ document.getElementById('authSubmit').onclick=async()=>{
 };
 document.getElementById('authGoogle').onclick=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});if(error)showAuthError(error.message)};
 async function signOut(){
-  try{await sb.auth.signOut()}catch(e){}
-  currentUser=null;
-  txs=[];
-  safeStorage.removeItem('gastosmart_auth');
-  // Clear ALL storage
+  try{
+    await sb.auth.signOut();
+  }catch(e){}
+  // Clear everything
   try{localStorage.clear()}catch(e){}
   try{sessionStorage.clear()}catch(e){}
-  // Hard reload bypassing cache
-  window.location.replace(window.location.pathname+'?v='+Date.now());
+  try{safeStorage.removeItem('gastosmart_auth')}catch(e){}
+  // Show auth screen directly without reload
+  currentUser=null;
+  txs=[];
+  document.getElementById('authScreen').style.display='flex';
+  document.getElementById('appNav').style.display='none';
+  document.getElementById('appLayout').style.display='none';
+  document.getElementById('mobileNav').style.display='none';
+  document.getElementById('authEmail').value='';
+  document.getElementById('authPassword').value='';
 }
 
 function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('appNav').style.display='none';document.getElementById('appLayout').style.display='none';document.getElementById('mobileNav').style.display='none'}
@@ -525,13 +558,14 @@ async function initApp(){
   const name=currentUser.user_metadata?.name||currentUser.email||'Usuario';
   const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('avatarInitials').textContent=initials;
-  // Show loading while fetching data
-  document.getElementById('mainContent').innerHTML='<div class="loading"><div class="spinner"></div>Cargando tus datos...</div>';
+  // Navegar de inmediato sin esperar Supabase
+  navigate('dashboard');
+  // Cargar datos en segundo plano y refrescar
   try{
     await ensureProfile(name);
     await loadTransactions();
-  }catch(e){console.log('Error cargando datos:',e)}
-  navigate('dashboard');
+    navigate('dashboard'); // refrescar con datos reales
+  }catch(e){console.log('Error datos:',e)}
 }
 async function ensureProfile(name){const{data}=await sb.from('profiles').select('id').eq('id',currentUser.id).single();if(!data)await sb.from('profiles').insert({id:currentUser.id,name,currency:'MXN'})}
 async function loadTransactions(){const{data,error}=await sb.from('transactions').select('*').eq('user_id',currentUser.id).order('date',{ascending:false});if(!error&&data)txs=data}
@@ -841,6 +875,22 @@ window.handleDelete=async id=>{if(!confirm('¿Eliminar esta transacción?'))retu
 document.getElementById('avatarBtn').addEventListener('click',e=>{e.stopPropagation();document.getElementById('avatarMenu').classList.toggle('open')});
 document.addEventListener('click',()=>document.getElementById('avatarMenu').classList.remove('open'));
 document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>navigate(el.dataset.page)));
+// Detectar Edge y mostrar sugerencia amigable
+(function(){
+  const isEdge = /Edg\//.test(navigator.userAgent);
+  const dismissed = localStorage.getItem('gs_edge_dismissed');
+  if(isEdge && !dismissed){
+    document.getElementById('edge-tip').style.display='block';
+    // Ajustar padding del auth screen para que no tape el banner
+    setTimeout(()=>{
+      const tip = document.getElementById('edge-tip');
+      if(tip && tip.style.display!=='none'){
+        document.getElementById('authScreen').style.paddingTop='80px';
+      }
+    },100);
+  }
+})();
+
 startApp();
 
 // PWA - instalable en Chrome y Safari móvil
