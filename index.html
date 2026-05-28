@@ -456,12 +456,18 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 </div>
 
 <script>
-// URL proxied a través de Netlify — funciona en Edge sin restricciones
-const SUPABASE_URL = window.location.hostname === 'localhost' 
-  ? 'https://ekoojdgqizzdbcqkxgln.supabase.co'
-  : window.location.origin + '/api/supabase';
+const SUPABASE_URL='https://ekoojdgqizzdbcqkxgln.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb29qZGdxaXp6ZGJjcWt4Z2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTAwMjksImV4cCI6MjA5NTQ4NjAyOX0.Ya1IqJuccG7D0nEfFeZ1ZXBSAWAyzIHhDYkfutZpkzI';
 const safeStorage=(()=>{try{localStorage.setItem('gs_t','1');localStorage.removeItem('gs_t');return localStorage}catch(e){const s={};return{getItem:k=>s[k]||null,setItem:(k,v)=>{s[k]=v},removeItem:k=>{delete s[k]}}}})();
+
+// Interceptar fetch de Supabase para usar proxy Netlify en Edge
+const _origFetch = window.fetch.bind(window);
+window.fetch = function(url, opts){
+  if(typeof url === 'string' && url.includes('ekoojdgqizzdbcqkxgln.supabase.co')){
+    url = url.replace('https://ekoojdgqizzdbcqkxgln.supabase.co', window.location.origin+'/api/supabase');
+  }
+  return _origFetch(url, opts);
+};
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:safeStorage,storageKey:'gastosmart_auth',flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
 
 const CATS={
