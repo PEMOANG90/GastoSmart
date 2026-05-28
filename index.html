@@ -30,7 +30,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-:root{--bg:#0e1117;--surface:#161c2d;--surface2:#1e2640;--surface3:#252e4d;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8eaf6;--muted:#7986b8;--muted2:#3d4a70;--accent:#7c6fff;--accent2:#a78bfa;--green:#2dd4a0;--red:#ff6b7a;--amber:#ffb340;--pink:#f472b6;--cyan:#38bdf8;--r:18px;--rs:12px;--transition:.22s cubic-bezier(.4,0,.2,1)}
+:root{--bg:#0e1117;--surface:#161c2d;--surface2:#1e2640;--surface3:#252e4d;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8eaf6;--muted:#7986b8;--muted2:#3d4a70;--accent:#7c6fff;--accent2:#a78bfa;--green:#2dd4a0;--red:#ff6b7a;--amber:#ffb340;--pink:#f472b6;--cyan:#38bdf8;--r:18px;--rs:12px;--transition:.22s cubic-bezier(.4,0,.2,1);--chart-text:#7986b8;--chart-grid:rgba(255,255,255,.05)}
+@media(prefers-color-scheme:light){:root{--bg:#f0f4ff;--surface:#ffffff;--surface2:#f5f7ff;--surface3:#eef1fb;--border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.12);--text:#0f1535;--muted:#5a6490;--muted2:#9aa3c8;--accent:#4f46e5;--accent2:#6366f1;--green:#059669;--red:#dc2626;--amber:#d97706;--chart-text:#5a6490;--chart-grid:rgba(0,0,0,.05)}}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;overflow-x:hidden}
 
@@ -235,6 +236,14 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 .budget-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 
 /* MOBILE */
+.tc-card{border-radius:20px;padding:22px;color:#fff;position:relative;overflow:hidden;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:transform var(--transition);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.tc-card:hover{transform:translateY(-4px)}
+.tc-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.08)}
+.tc-bank{font-size:12px;font-weight:700;opacity:.9;letter-spacing:.06em;text-transform:uppercase}
+.tc-number{font-family:'Space Grotesk',sans-serif;font-size:14px;letter-spacing:.18em;opacity:.75;margin:6px 0}
+.tc-saldo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700}
+.tc-dates{display:flex;gap:14px;font-size:11px;opacity:.8;margin-top:4px}
+.tc-urgente{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.25);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
 .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,11,20,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 0;z-index:100}
 .mobile-nav-inner{display:flex;justify-content:space-around}
 .mob-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;padding:6px 12px;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;transition:color var(--transition)}
@@ -407,6 +416,7 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
     <button class="nav-item" data-page="reports"><span class="ni" style="color:#2dd4a0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Reportes</button>
     <div class="nav-section">Herramientas</div>
     <button class="nav-item" data-page="ai"><span class="ni" style="color:#f472b6"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg></span>Asistente IA</button>
+    <button class="nav-item" data-page="tarjetas"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="5" y1="15" x2="9" y2="15"/></svg></span>Tarjetas TC<span style="margin-left:auto;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(45,212,160,.12);color:#2dd4a0">NUEVO</span></button>
     <button class="nav-item" data-page="shared"><span class="ni" style="color:#38bdf8"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Compartido</button>
     <div class="nav-section" style="margin-top:auto">Cuenta</div>
     <button class="nav-item" data-page="premium"><span class="ni" style="color:#ffb340"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Premium<span class="badge-premium">PRO</span></button>
@@ -417,13 +427,68 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
 
 <nav class="mobile-nav" id="mobileNav" style="display:none">
   <div class="mobile-nav-inner">
-    <button class="mob-item active" data-page="dashboard"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2" class="mob-icon"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>Inicio</button>
-    <button class="mob-item" data-page="transactions"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" class="mob-icon"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Gastos</button>
-    <button class="mob-item" data-page="budget"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ffb340" stroke-width="2.2" class="mob-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Budget</button>
-    <button class="mob-item" data-page="reports"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2dd4a0" stroke-width="2.2" class="mob-icon"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reportes</button>
-    <button class="mob-item" data-page="ai"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2.2" class="mob-icon"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>IA</button>
+    <button class="mob-item active" data-page="dashboard"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mob-icon"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>Inicio</button>
+    <button class="mob-item" data-page="transactions"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mob-icon"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Gastos</button>
+    <button class="mob-item" data-page="tarjetas"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mob-icon"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="5" y1="15" x2="9" y2="15"/></svg>TC</button>
+    <button class="mob-item" data-page="budget"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mob-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Budget</button>
+    <button class="mob-item" data-page="reports"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mob-icon"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reportes</button>
+    <button class="mob-item" id="mobMenuBtn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mob-icon"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>Más</button>
   </div>
 </nav>
+
+<!-- MENÚ MÓVIL COMPLETO -->
+<div id="mobMenuPanel" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);backdrop-filter:blur(8px)" onclick="closeMobMenu()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:24px 24px 0 0;padding:12px 0 max(20px,env(safe-area-inset-bottom));max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">
+    <div style="width:36px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 16px"></div>
+    <div style="padding:0 16px 8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Navegación</div>
+    ${['ai:f472b6:M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z:Asistente IA'].map(x=>{const[pg,col,path,label]=x.split(':');return``}).join('')}
+    <button onclick="navAndClose('ai')" style="display:flex;align-items:center;gap:14px;width:100%;padding:13px 20px;background:none;border:none;cursor:pointer;color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500">
+      <span style="width:38px;height:38px;border-radius:12px;background:rgba(244,114,182,.12);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg></span>Asistente IA</button>
+    <button onclick="navAndClose('shared')" style="display:flex;align-items:center;gap:14px;width:100%;padding:13px 20px;background:none;border:none;cursor:pointer;color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500">
+      <span style="width:38px;height:38px;border-radius:12px;background:rgba(56,189,248,.12);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Compartido</button>
+    <button onclick="navAndClose('premium')" style="display:flex;align-items:center;gap:14px;width:100%;padding:13px 20px;background:none;border:none;cursor:pointer;color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500">
+      <span style="width:38px;height:38px;border-radius:12px;background:rgba(255,179,64,.12);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffb340" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Premium</button>
+    <button onclick="navAndClose('settings')" style="display:flex;align-items:center;gap:14px;width:100%;padding:13px 20px;background:none;border:none;cursor:pointer;color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500">
+      <span style="width:38px;height:38px;border-radius:12px;background:rgba(107,116,160,.12);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b74a0" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Ajustes</button>
+    <div style="height:1px;background:var(--border);margin:8px 16px"></div>
+    <button onclick="signOut()" style="display:flex;align-items:center;gap:14px;width:100%;padding:13px 20px;background:none;border:none;cursor:pointer;color:var(--red);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600">
+      <span style="width:38px;height:38px;border-radius:12px;background:rgba(255,107,122,.12);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- MODAL TARJETA DE CRÉDITO -->
+<div id="tcModal" class="modal-bg">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header"><span class="modal-title" id="tcModalTitle">Nueva Tarjeta de Crédito</span><button class="btn-ghost" onclick="document.getElementById('tcModal').classList.remove('open')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="form-group"><label class="form-label">Banco / Institución</label>
+      <select class="form-input" id="tcBanco">
+        <option value="">Selecciona tu banco</option>
+        <optgroup label="Bancos tradicionales"><option>BBVA</option><option>Banorte</option><option>Santander</option><option>Citibanamex</option><option>HSBC</option><option>Scotiabank</option><option>Inbursa</option><option>Bajío</option><option>Afirme</option></optgroup>
+        <optgroup label="Bancos digitales"><option>Nu (Nubank)</option><option>Hey Banco</option><option>Spin by OXXO</option><option>Mercado Pago</option><option>RappiPay</option><option>Stori</option><option>Klar</option><option>Cuenca</option></optgroup>
+        <optgroup label="Tiendas y comercios"><option>Liverpool (Visa)</option><option>El Palacio de Hierro</option><option>Coppel</option><option>Sam's Club</option><option>Costco</option><option>Walmart</option><option>Pemex</option></optgroup>
+        <optgroup label="Otros"><option>Otro banco</option></optgroup>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Nombre / Alias</label><input class="form-input" id="tcNombre" placeholder="ej. Mi BBVA Oro, TC del trabajo..."></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label class="form-label">Últimos 4 dígitos</label><input class="form-input" id="tcDigitos" placeholder="1234" maxlength="4" inputmode="numeric"></div>
+      <div class="form-group"><label class="form-label">Límite de crédito (MXN)</label><input class="form-input" id="tcLimite" type="number" placeholder="0.00"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label class="form-label">Saldo actual (lo que debes)</label><input class="form-input" id="tcSaldo" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Pago mínimo</label><input class="form-input" id="tcMinimo" type="number" placeholder="0.00"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div class="form-group"><label class="form-label">Día de corte</label><input class="form-input" id="tcCorte" type="number" placeholder="1-31" min="1" max="31"></div>
+      <div class="form-group"><label class="form-label">Día límite pago</label><input class="form-input" id="tcPago" type="number" placeholder="1-31" min="1" max="31"></div>
+      <div class="form-group"><label class="form-label">CAT anual %</label><input class="form-input" id="tcTasa" type="number" placeholder="45.5" step="0.1"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-outline" onclick="document.getElementById('tcModal').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-primary" id="saveTc"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Guardar tarjeta</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL -->
 <div id="addModal" class="modal-bg">
@@ -441,35 +506,71 @@ tbody tr:hover td{background:rgba(255,255,255,.02)}
     <div class="form-group"><label class="form-label">Categoría</label>
       <select class="form-input" id="txCat" onchange="checkCustomCat(this.value)">
         <optgroup label="🍽️ Vida diaria">
-          <option value="Alimentación">Alimentación</option>
-          <option value="Transporte">Transporte</option>
-          <option value="Vivienda">Vivienda</option>
-          <option value="Servicios">Servicios</option>
-          <option value="Ropa">Ropa</option>
+          <option value="Alimentación">Alimentación y despensa</option>
+          <option value="Restaurantes">Restaurantes y cafés</option>
+          <option value="Transporte">Transporte público</option>
+          <option value="Gasolina">Gasolina</option>
+          <option value="Estacionamiento">Estacionamiento y casetas</option>
+          <option value="Vivienda">Renta / Hipoteca</option>
+          <option value="Mantenimiento">Mantenimiento del hogar</option>
+          <option value="Servicios">Servicios (agua, luz, gas)</option>
+          <option value="Internet">Internet y telefonía</option>
+          <option value="Ropa">Ropa y calzado</option>
+          <option value="Higiene">Higiene y cuidado personal</option>
           <option value="Mascotas">Mascotas</option>
-          <option value="Familia">Familia</option>
+          <option value="Familia">Familia y niños</option>
         </optgroup>
-        <optgroup label="🏥 Salud">
-          <option value="Salud">Consultas médicas</option>
+        <optgroup label="🏥 Salud y bienestar">
+          <option value="Consulta médica">Consultas médicas</option>
           <option value="Medicamentos">Medicamentos</option>
+          <option value="Laboratorio">Laboratorio y estudios</option>
+          <option value="Dental">Dental</option>
+          <option value="Óptica">Óptica</option>
+          <option value="Gimnasio">Gimnasio y deporte</option>
+          <option value="Psicología">Psicología / Terapia</option>
         </optgroup>
         <optgroup label="💳 Deudas y crédito">
-          <option value="Deuda TC">Tarjeta de crédito</option>
-          <option value="Préstamos">Préstamos</option>
+          <option value="Deuda TC">Pago tarjeta de crédito</option>
+          <option value="Préstamo personal">Préstamo personal</option>
+          <option value="Crédito automotriz">Crédito automotriz</option>
+          <option value="Hipoteca">Hipoteca</option>
+          <option value="INFONAVIT">INFONAVIT / FOVISSSTE</option>
           <option value="Impuestos">Impuestos / SAT</option>
+          <option value="IMSS/ISSSTE">IMSS / ISSSTE</option>
         </optgroup>
         <optgroup label="🎮 Ocio y cultura">
-          <option value="Entretenimiento">Entretenimiento</option>
-          <option value="Suscripciones">Suscripciones (Netflix, Spotify...)</option>
-          <option value="Educación">Educación</option>
+          <option value="Entretenimiento">Entretenimiento y salidas</option>
+          <option value="Streaming">Streaming (Netflix, Disney+...)</option>
+          <option value="Música">Música (Spotify, Apple Music...)</option>
+          <option value="Juegos">Videojuegos y apps</option>
+          <option value="Viajes">Viajes y vacaciones</option>
+          <option value="Hobbies">Hobbies y aficiones</option>
         </optgroup>
-        <optgroup label="💰 Finanzas">
+        <optgroup label="📚 Educación y trabajo">
+          <option value="Educación">Colegiaturas y libros</option>
+          <option value="Cursos">Cursos y capacitación</option>
+          <option value="Útiles">Útiles y material escolar</option>
+          <option value="Trabajo">Gastos de trabajo</option>
+          <option value="Software">Software y herramientas</option>
+        </optgroup>
+        <optgroup label="💰 Finanzas personales">
           <option value="Ahorro">Ahorro</option>
           <option value="Inversión">Inversión</option>
+          <option value="Seguro">Seguros</option>
+          <option value="Pensión">Pensión / AFORE</option>
+          <option value="Donación">Donaciones</option>
+        </optgroup>
+        <optgroup label="💵 Ingresos">
+          <option value="Salario">Salario / Nómina</option>
+          <option value="Freelance">Freelance / Honorarios</option>
+          <option value="Negocio">Negocio propio</option>
+          <option value="Renta ingreso">Renta cobrada</option>
+          <option value="Inversión ingreso">Rendimientos de inversión</option>
+          <option value="Regalo">Regalo / Apoyo familiar</option>
         </optgroup>
         <optgroup label="➕ Otros">
-          <option value="Otros">Otros</option>
-          <option value="Personalizada">✏️ Crear categoría personalizada...</option>
+          <option value="Otros">Otros gastos</option>
+          <option value="Personalizada">✏️ Crear mi propia categoría...</option>
         </optgroup>
       </select>
       <input class="form-input" id="customCatInput" placeholder="Escribe el nombre de tu categoría..." style="display:none;margin-top:8px">
@@ -530,26 +631,34 @@ window.fetch = function(url, opts){
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:safeStorage,storageKey:'gastosmart_auth',flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
 
 const CATS={
-  'Alimentación':{color:'#ffb340',bg:'rgba(255,179,64,.12)',icon:'shopping-cart'},
-  'Transporte':{color:'#38bdf8',bg:'rgba(56,189,248,.12)',icon:'car'},
-  'Vivienda':{color:'#a78bfa',bg:'rgba(167,139,250,.12)',icon:'home'},
-  'Salud':{color:'#ff6b7a',bg:'rgba(255,107,122,.12)',icon:'heart'},
-  'Medicamentos':{color:'#ff6b7a',bg:'rgba(255,107,122,.12)',icon:'activity'},
-  'Deuda TC':{color:'#f97316',bg:'rgba(249,115,22,.12)',icon:'credit-card'},
-  'Préstamos':{color:'#f97316',bg:'rgba(249,115,22,.12)',icon:'trending-down'},
-  'Entretenimiento':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'play-circle'},
-  'Suscripciones':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'repeat'},
-  'Educación':{color:'#38bdf8',bg:'rgba(56,189,248,.12)',icon:'book-open'},
-  'Ropa':{color:'#f472b6',bg:'rgba(244,114,182,.12)',icon:'tag'},
-  'Servicios':{color:'#ffb340',bg:'rgba(255,179,64,.12)',icon:'zap'},
-  'Mascotas':{color:'#a78bfa',bg:'rgba(167,139,250,.12)',icon:'feather'},
-  'Familia':{color:'#f472b6',bg:'rgba(244,114,182,.12)',icon:'users'},
-  'Ahorro':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'trending-up'},
-  'Inversión':{color:'#2dd4a0',bg:'rgba(45,212,160,.12)',icon:'bar-chart-2'},
-  'Impuestos':{color:'#6b74a0',bg:'rgba(107,116,160,.12)',icon:'file-text'},
-  'Otros':{color:'#6b74a0',bg:'rgba(107,116,160,.12)',icon:'box'},
-  'Personalizada':{color:'#7c6fff',bg:'rgba(124,111,255,.12)',icon:'plus-circle'}
-};
+  'Alimentación':{color:'#f59e0b',bg:'rgba(245,158,11,.12)'},'Restaurantes':{color:'#f59e0b',bg:'rgba(245,158,11,.12)'},
+  'Transporte':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},'Gasolina':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},
+  'Estacionamiento':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},'Vivienda':{color:'#8b5cf6',bg:'rgba(139,92,246,.12)'},
+  'Mantenimiento':{color:'#8b5cf6',bg:'rgba(139,92,246,.12)'},'Servicios':{color:'#f59e0b',bg:'rgba(245,158,11,.12)'},
+  'Internet':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},'Ropa':{color:'#ec4899',bg:'rgba(236,72,153,.12)'},
+  'Higiene':{color:'#ec4899',bg:'rgba(236,72,153,.12)'},'Mascotas':{color:'#8b5cf6',bg:'rgba(139,92,246,.12)'},
+  'Familia':{color:'#ec4899',bg:'rgba(236,72,153,.12)'},'Consulta médica':{color:'#ef4444',bg:'rgba(239,68,68,.12)'},
+  'Salud':{color:'#ef4444',bg:'rgba(239,68,68,.12)'},'Medicamentos':{color:'#ef4444',bg:'rgba(239,68,68,.12)'},
+  'Laboratorio':{color:'#ef4444',bg:'rgba(239,68,68,.12)'},'Dental':{color:'#ef4444',bg:'rgba(239,68,68,.12)'},
+  'Óptica':{color:'#ef4444',bg:'rgba(239,68,68,.12)'},'Gimnasio':{color:'#10b981',bg:'rgba(16,185,129,.12)'},
+  'Psicología':{color:'#8b5cf6',bg:'rgba(139,92,246,.12)'},'Deuda TC':{color:'#f97316',bg:'rgba(249,115,22,.12)'},
+  'Préstamo personal':{color:'#f97316',bg:'rgba(249,115,22,.12)'},'Crédito automotriz':{color:'#f97316',bg:'rgba(249,115,22,.12)'},
+  'Hipoteca':{color:'#f97316',bg:'rgba(249,115,22,.12)'},'INFONAVIT':{color:'#f97316',bg:'rgba(249,115,22,.12)'},
+  'Impuestos':{color:'#6b7280',bg:'rgba(107,114,128,.12)'},'IMSS/ISSSTE':{color:'#6b7280',bg:'rgba(107,114,128,.12)'},
+  'Entretenimiento':{color:'#10b981',bg:'rgba(16,185,129,.12)'},'Streaming':{color:'#10b981',bg:'rgba(16,185,129,.12)'},
+  'Música':{color:'#10b981',bg:'rgba(16,185,129,.12)'},'Juegos':{color:'#10b981',bg:'rgba(16,185,129,.12)'},
+  'Viajes':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},'Hobbies':{color:'#8b5cf6',bg:'rgba(139,92,246,.12)'},
+  'Educación':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},'Cursos':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},
+  'Útiles':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},'Trabajo':{color:'#6b7280',bg:'rgba(107,114,128,.12)'},
+  'Software':{color:'#3b82f6',bg:'rgba(59,130,246,.12)'},'Ahorro':{color:'#10b981',bg:'rgba(16,185,129,.12)'},
+  'Inversión':{color:'#10b981',bg:'rgba(16,185,129,.12)'},'Seguro':{color:'#6b7280',bg:'rgba(107,114,128,.12)'},
+  'Pensión':{color:'#6b7280',bg:'rgba(107,114,128,.12)'},'Donación':{color:'#ec4899',bg:'rgba(236,72,153,.12)'},
+  'Salario':{color:'#10b981',bg:'rgba(16,185,129,.12)'},'Freelance':{color:'#10b981',bg:'rgba(16,185,129,.12)'},
+  'Negocio':{color:'#10b981',bg:'rgba(16,185,129,.12)'},'Renta ingreso':{color:'#10b981',bg:'rgba(16,185,129,.12)'},
+  'Inversión ingreso':{color:'#10b981',bg:'rgba(16,185,129,.12)'},'Regalo':{color:'#ec4899',bg:'rgba(236,72,153,.12)'},
+  'Suscripciones':{color:'#10b981',bg:'rgba(16,185,129,.12)'},'Préstamos':{color:'#f97316',bg:'rgba(249,115,22,.12)'},
+  'Otros':{color:'#6b7280',bg:'rgba(107,114,128,.12)'},'Personalizada':{color:'#7c6fff',bg:'rgba(124,111,255,.12)'}
+}
 const BUDGETS={'Alimentación':3000,'Transporte':1500,'Vivienda':9000,'Salud':1000,'Medicamentos':500,'Deuda TC':2000,'Préstamos':1500,'Entretenimiento':800,'Suscripciones':400,'Educación':2000,'Ropa':1000,'Servicios':500,'Mascotas':500,'Familia':1500,'Ahorro':2000,'Inversión':1000,'Impuestos':500};
 let currentUser=null,txs=[],page='dashboard',addType='gasto';
 
@@ -637,6 +746,7 @@ async function initApp(){
   try{
     await ensureProfile(name);
     await loadTransactions();
+    await loadTarjetas();
     navigate('dashboard'); // refrescar con datos reales
   }catch(e){console.log('Error datos:',e)}
 }
@@ -881,7 +991,7 @@ function renderSettings(){
 
 async function saveProfile(){const name=document.getElementById('settingsName').value.trim();if(!name)return;await sb.auth.updateUser({data:{name}});await sb.from('profiles').update({name}).eq('id',currentUser.id);currentUser.user_metadata.name=name;const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);document.getElementById('avatarInitials').textContent=initials;alert('Perfil actualizado')}
 
-const PAGES={dashboard:renderDashboard,transactions:renderTransactions,budget:renderBudget,reports:renderReports,ai:renderAI,shared:renderShared,premium:renderPremium,settings:renderSettings};
+const PAGES={dashboard:renderDashboard,transactions:renderTransactions,budget:renderBudget,reports:renderReports,tarjetas:renderTarjetas,ai:renderAI,shared:renderShared,premium:renderPremium,settings:renderSettings};
 
 // Categoría personalizada
 function checkCustomCat(val){
@@ -963,9 +1073,122 @@ document.getElementById('saveTransaction').addEventListener('click',async()=>{
   btn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Guardar';btn.disabled=false;
 });
 window.handleDelete=async id=>{if(!confirm('¿Eliminar esta transacción?'))return;await deleteTransaction(id);navigate(page)};
+function closeMobMenu(){document.getElementById('mobMenuPanel').style.display='none'}
+function navAndClose(p){closeMobMenu();navigate(p)}
+document.getElementById('mobMenuBtn').addEventListener('click',e=>{e.stopPropagation();document.getElementById('mobMenuPanel').style.display='block'});
 document.getElementById('avatarBtn').addEventListener('click',e=>{e.stopPropagation();document.getElementById('avatarMenu').classList.toggle('open')});
 document.addEventListener('click',()=>document.getElementById('avatarMenu').classList.remove('open'));
 document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>navigate(el.dataset.page)));
+// ══ TARJETAS DE CRÉDITO ══════════════════
+let tarjetas = JSON.parse(safeStorage.getItem('gs_tarjetas')||'[]');
+let editTcId = null;
+
+async function loadTarjetas(){
+  try{
+    const{data,error}=await sb.from('tarjetas').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+    if(!error&&data&&data.length>0){tarjetas=data;safeStorage.setItem('gs_tarjetas',JSON.stringify(data))}
+  }catch(e){}
+}
+async function saveTarjeta(tc){
+  try{
+    if(tc.id&&typeof tc.id==='number'&&tc.id>1700000000000){
+      tarjetas=tarjetas.map(t=>t.id===tc.id?tc:t);
+    } else if(tc.id){
+      await sb.from('tarjetas').update(tc).eq('id',tc.id).eq('user_id',currentUser.id);
+      tarjetas=tarjetas.map(t=>t.id===tc.id?tc:t);
+    } else {
+      const{data,error}=await sb.from('tarjetas').insert({...tc,user_id:currentUser.id}).select().single();
+      if(!error&&data)tarjetas.unshift(data);
+      else{tc.id=Date.now();tarjetas.unshift(tc)}
+    }
+  }catch(e){tc.id=tc.id||Date.now();const arr=tarjetas.filter(t=>t.id!==tc.id);arr.unshift(tc);tarjetas=arr;}
+  safeStorage.setItem('gs_tarjetas',JSON.stringify(tarjetas));
+}
+async function deleteTarjeta(id){
+  try{await sb.from('tarjetas').delete().eq('id',id)}catch(e){}
+  tarjetas=tarjetas.filter(t=>t.id!==id);
+  safeStorage.setItem('gs_tarjetas',JSON.stringify(tarjetas));
+}
+function getDiasParaFecha(dia){
+  const hoy=new Date(),diasMes=new Date(hoy.getFullYear(),hoy.getMonth()+1,0).getDate();
+  let d=dia-hoy.getDate();if(d<0)d+=diasMes;return d;
+}
+function openTcModal(tc=null){
+  editTcId=tc?tc.id:null;
+  document.getElementById('tcModalTitle').textContent=tc?'Editar Tarjeta':'Nueva Tarjeta de Crédito';
+  ['tcBanco','tcNombre','tcDigitos','tcLimite','tcSaldo','tcMinimo','tcCorte','tcPago','tcTasa'].forEach(id=>{
+    const el=document.getElementById(id);if(el){
+      const map={tcBanco:'banco',tcNombre:'nombre',tcDigitos:'digitos',tcLimite:'limite',tcSaldo:'saldo',tcMinimo:'minimo',tcCorte:'dia_corte',tcPago:'dia_pago',tcTasa:'tasa'};
+      el.value=tc?tc[map[id]]||'':'';
+    }
+  });
+  document.getElementById('tcModal').classList.add('open');
+}
+window.editTc=tc=>openTcModal(typeof tc==='string'?JSON.parse(tc.replace(/&quot;/g,'"')):tc);
+window.handleDeleteTc=async id=>{if(!confirm('¿Eliminar esta tarjeta?'))return;await deleteTarjeta(id);navigate('tarjetas')};
+
+document.getElementById('tcModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+document.getElementById('saveTc').addEventListener('click',async()=>{
+  const banco=document.getElementById('tcBanco').value,nombre=document.getElementById('tcNombre').value.trim();
+  if(!banco||!nombre){alert('Selecciona el banco e ingresa un nombre');return}
+  const tc={id:editTcId,banco,nombre,
+    digitos:document.getElementById('tcDigitos').value.trim(),
+    limite:parseFloat(document.getElementById('tcLimite').value)||0,
+    saldo:parseFloat(document.getElementById('tcSaldo').value)||0,
+    minimo:parseFloat(document.getElementById('tcMinimo').value)||0,
+    dia_corte:parseInt(document.getElementById('tcCorte').value)||null,
+    dia_pago:parseInt(document.getElementById('tcPago').value)||null,
+    tasa:parseFloat(document.getElementById('tcTasa').value)||null
+  };
+  await saveTarjeta(tc);
+  document.getElementById('tcModal').classList.remove('open');
+  navigate('tarjetas');
+});
+
+function renderTarjetas(){
+  const BANK_COLORS={'BBVA':'linear-gradient(135deg,#004481,#1464A5)','Banorte':'linear-gradient(135deg,#CC0000,#8B0000)','Santander':'linear-gradient(135deg,#CC0000,#aa0000)','Citibanamex':'linear-gradient(135deg,#003B5C,#0077B6)','HSBC':'linear-gradient(135deg,#DB0011,#8B0000)','Scotiabank':'linear-gradient(135deg,#C8102E,#8B0000)','Inbursa':'linear-gradient(135deg,#0047AB,#002D6E)','Nu (Nubank)':'linear-gradient(135deg,#820AD1,#5A0096)','Hey Banco':'linear-gradient(135deg,#FF6B00,#CC5500)','Spin by OXXO':'linear-gradient(135deg,#E30613,#B00010)','Mercado Pago':'linear-gradient(135deg,#009EE3,#0077B6)','RappiPay':'linear-gradient(135deg,#FF441F,#CC2200)','Stori':'linear-gradient(135deg,#00B4D8,#0077B6)','Klar':'linear-gradient(135deg,#5046E5,#3730A3)','Liverpool (Visa)':'linear-gradient(135deg,#C8A96E,#8B6914)','El Palacio de Hierro':'linear-gradient(135deg,#222,#555)','Coppel':'linear-gradient(135deg,#0066CC,#004499)'};
+  const totalDeuda=tarjetas.reduce((s,t)=>s+(t.saldo||0),0);
+  const totalLimite=tarjetas.reduce((s,t)=>s+(t.limite||0),0);
+  const util=totalLimite>0?Math.round((totalDeuda/totalLimite)*100):0;
+  const proxVenc=tarjetas.filter(t=>t.dia_pago&&getDiasParaFecha(t.dia_pago)<=10).sort((a,b)=>getDiasParaFecha(a.dia_pago)-getDiasParaFecha(b.dia_pago));
+  return`<div class="fade-up">
+  <div class="top-row">
+    <div><div class="page-title">Mis Tarjetas de Crédito</div><div class="page-sub">Control de deudas, cortes y fechas de pago</div></div>
+    <button class="btn btn-primary" onclick="openTcModal()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Agregar tarjeta</button>
+  </div>
+  ${tarjetas.length?`
+  <div class="grid3" style="margin-bottom:22px">
+    <div class="metric-card expense"><div class="m-label">Deuda total</div><div class="m-value" style="color:var(--red)">${mxn(totalDeuda)}</div><div class="m-change" style="color:var(--muted)">${tarjetas.length} tarjeta${tarjetas.length!==1?'s':''}</div></div>
+    <div class="metric-card balance"><div class="m-label">Límite total</div><div class="m-value" style="color:var(--accent2)">${mxn(totalLimite)}</div><div class="m-change" style="color:var(--muted)">Disponible: ${mxn(totalLimite-totalDeuda)}</div></div>
+    <div class="metric-card ${util>70?'expense':util>40?'savings':'income'}"><div class="m-label">Utilización</div><div class="m-value" style="color:${util>70?'var(--red)':util>40?'var(--amber)':'var(--green)'}">${util}%</div><div class="m-change" style="color:var(--muted)">${util>70?'⚠ Alto — afecta tu score':util>40?'Moderado':'Saludable'}</div></div>
+  </div>
+  ${proxVenc.length?`<div style="margin-bottom:20px">${proxVenc.map(tc=>{const d=getDiasParaFecha(tc.dia_pago);return`<div class="alert ${d<=3?'alert-danger':'alert-warning'}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><strong>${tc.banco} ${tc.nombre}:</strong> Límite de pago en <strong>${d} día${d!==1?'s':''}</strong> (día ${tc.dia_pago}). Debes: ${mxn(tc.saldo)} · Mínimo: ${mxn(tc.minimo)}</span></div>`}).join('')}</div>`:''}
+  <div class="grid3" style="margin-bottom:22px">
+    ${tarjetas.map(tc=>{const bg=BANK_COLORS[tc.banco]||'linear-gradient(135deg,#4f46e5,#7c3aed)';const dp=tc.dia_pago?getDiasParaFecha(tc.dia_pago):null;const urgente=dp!==null&&dp<=5;return`<div class="tc-card" style="background:${bg}" onclick="editTc(${JSON.stringify(tc).replace(/"/g,'&quot;')})">
+      ${urgente?`<div class="tc-urgente">⚠ Pago en ${dp}d</div>`:''}
+      <div><div class="tc-bank">${tc.banco}</div><div class="tc-number">•••• •••• •••• ${tc.digitos||'????'}</div><div style="font-size:13px;font-weight:600;opacity:.9">${tc.nombre}</div></div>
+      <div><div style="font-size:11px;opacity:.7;margin-bottom:2px">Saldo actual</div><div class="tc-saldo">${mxn(tc.saldo)}</div>
+      <div class="tc-dates">${tc.dia_corte?`<span>Corte: día ${tc.dia_corte} (${getDiasParaFecha(tc.dia_corte)}d)</span>`:''} ${tc.dia_pago?`<span>Pago: día ${tc.dia_pago} (${dp}d)</span>`:''}</div></div>
+    </div>`}).join('')}
+  </div>
+  <div class="card"><div class="section-title">Detalle completo</div><div class="tbl-wrap">
+    <table><thead><tr><th>Banco</th><th>Tarjeta</th><th>Saldo</th><th>Pago mínimo</th><th>Límite</th><th>Corte</th><th>Vence pago</th><th>CAT%</th><th></th></tr></thead>
+    <tbody>${tarjetas.map(tc=>{const dp=tc.dia_pago?getDiasParaFecha(tc.dia_pago):null;const urgente=dp!==null&&dp<=5;const u=tc.limite>0?Math.round((tc.saldo/tc.limite)*100):0;
+    return`<tr><td><strong>${tc.banco}</strong></td><td>${tc.nombre}<br><span style="font-size:11px;color:var(--muted)">•••• ${tc.digitos||'????'}</span></td><td style="font-weight:700;color:var(--red)">${mxn(tc.saldo)}<br><span style="font-size:11px;color:var(--muted)">${u}% utilizado</span></td><td style="color:var(--amber);font-weight:600">${mxn(tc.minimo)}</td><td>${mxn(tc.limite)}</td><td>${tc.dia_corte?`Día ${tc.dia_corte}`:'-'}</td><td><span class="chip ${urgente?'chip-red':'chip-amber'}">${tc.dia_pago?`Día ${tc.dia_pago}${dp!==null?' ('+dp+'d)':''}`:'-'}</span></td><td>${tc.tasa?tc.tasa+'%':'-'}</td>
+    <td style="display:flex;gap:4px"><button onclick="editTc(${JSON.stringify(tc).replace(/"/g,'&quot;')})" style="background:none;border:none;cursor:pointer;color:var(--accent);padding:4px;border-radius:6px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+    <button onclick="handleDeleteTc(${tc.id})" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td></tr>`}).join('')}
+    </tbody></table></div></div>
+  `:`<div class="card" style="text-align:center;padding:60px 40px">
+    <div style="width:72px;height:72px;background:rgba(124,111,255,.12);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="5" y1="15" x2="9" y2="15"/></svg></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px">Sin tarjetas registradas</div>
+    <div style="color:var(--muted);font-size:14px;margin-bottom:24px">Agrega tus tarjetas para llevar control de deudas, fechas de corte y límites de pago.</div>
+    <button class="btn btn-primary" onclick="openTcModal()">+ Agregar primera tarjeta</button>
+  </div>`}
+</div>`
+}
+
+// ══ FIN TARJETAS ══════════════════════════
+
 // Detectar Edge y mostrar sugerencia amigable
 (function(){
   const isEdge = /Edg\//.test(navigator.userAgent);
