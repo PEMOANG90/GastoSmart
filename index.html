@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260528163256">
+<meta name="app-version" content="20260528164403">
 <title>GastoSmart 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -542,8 +542,8 @@ async function doSignOut(){
   // marca de logout: sobrevive la recarga y obliga a mostrar login
   try{sessionStorage.setItem('gs_logout','1')}catch(e){}
   user=null;txs=[];tarjetas=[];
-  // Recarga a una URL limpia (sin hash de OAuth ni parametros)
-  window.location.replace(window.location.origin+window.location.pathname);
+  // Recarga forzada (parametro cambiante garantiza el reload) a URL limpia
+  window.location.replace(window.location.origin+window.location.pathname+'?_out='+Date.now());
 }
 
 // ─── INIT ────────────────────────────────────────────────
@@ -630,7 +630,7 @@ async function start(){
   if(sessionStorage.getItem('gs_logout')){
     sessionStorage.removeItem('gs_logout');
     try{await sb.auth.signOut({scope:'local'})}catch(e){}
-    if(location.hash)history.replaceState(null,'',location.origin+location.pathname);
+    history.replaceState(null,'',location.origin+location.pathname);
     return;
   }
   try{
