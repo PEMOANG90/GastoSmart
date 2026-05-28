@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260528110729">
+<meta name="app-version" content="20260528113441">
 <title>GastoSmart 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -1132,17 +1132,16 @@ function afterRender(p){
 // ─── START ────────────────────────────────────────────────
 // Auto-actualización: detecta nueva versión y limpia caché automáticamente
 (function(){
-  const BUILD='1779984183';
-  const stored=localStorage.getItem('gs_version');
-  if(stored && stored!==BUILD){
-    // Nueva versión detectada — limpiar sesión anterior
-    try{localStorage.clear()}catch(e){}
-    try{sessionStorage.clear()}catch(e){}
-    localStorage.setItem('gs_version',BUILD);
-    window.location.replace(window.location.pathname+'?v='+BUILD);
-    return;
+  // Fuente única de versión: la etiqueta <meta name="app-version">.
+  // actualizar.bat la cambia en cada deploy, así nunca se desincroniza.
+  var meta = document.querySelector('meta[name="app-version"]');
+  var BUILD = meta ? meta.getAttribute('content') : '0';
+  var stored = localStorage.getItem('gs_version');
+  if (stored && stored !== BUILD) {
+    // Nueva versión detectada. Conservamos la sesión de Supabase (no cerramos sesión).
+    // Si algún día necesitas limpiar datos cacheados incompatibles, hazlo aquí.
   }
-  localStorage.setItem('gs_version',BUILD);
+  try { localStorage.setItem('gs_version', BUILD); } catch(e){}
   start();
 })();
 </script>
