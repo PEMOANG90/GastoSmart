@@ -1,6 +1,6 @@
 # GastoSmart — Estado del Proyecto
 
-_Última actualización: 28 de mayo de 2026_
+_Última actualización: 29 de mayo de 2026_
 
 App de control de gastos personales. Documento de continuidad para retomar el proyecto en cualquier momento (incluso desde una PC nueva o una conversación nueva).
 
@@ -15,106 +15,121 @@ App de control de gastos personales. Documento de continuidad para retomar el pr
 | Supabase URL | https://ekoojdgqizzdbcqkxgln.supabase.co |
 | Carpeta local | `C:\Users\Pedro Molina\OneDrive\Desktop\GastoSmart\Scrpt\files` |
 
-> La anon key va en el frontend a propósito (es pública por diseño). Lo que protege los datos son las políticas RLS (ya configuradas en transactions, tarjetas y profiles).
+> La anon key va en el frontend a propósito (es pública por diseño). Lo que protege los datos son las políticas RLS (configuradas en transactions, tarjetas y profiles).
 
 ---
 
 ## 2. Stack
 
-HTML + CSS + JavaScript vanilla (todo inline en `index.html`) · Supabase (auth + base de datos) · Chart.js · Vercel (hosting).
+HTML + CSS + JavaScript vanilla (todo inline en `index.html`) · Supabase (auth + base de datos) · Chart.js · Vercel. Archivos: `index.html`, `vercel.json` (caché), `actualizar.bat` (deploy).
 
 ---
 
 ## 3. Cómo desplegar
 
-1. Editar los archivos en la carpeta local.
-2. Doble clic en `actualizar.bat` → inyecta versión, sube a GitHub, Vercel despliega.
-3. Esperar a `[3/3] Listo!` y ~60 s. Recargar con Ctrl+Shift+R.
-
-Archivos del proyecto: `index.html` (toda la app), `vercel.json` (control de caché), `actualizar.bat` (deploy).
+1. Editar archivos en la carpeta local.
+2. Doble clic en `actualizar.bat` → inyecta versión (UTF-8), `git add -A`, push a GitHub → Vercel despliega.
+3. Esperar a `[3/3] Listo!` + ~60 s. Recargar con Ctrl+Shift+R.
 
 ---
 
 ## 4. Lo que funciona
 
 - Login email/contraseña y Google OAuth (flujo PKCE, sesión se renueva sola).
-- Cerrar sesión (determinista, sin colgarse).
-- Dashboard: métricas, gráfica de categorías, presupuesto mensual (conectado a los límites reales), últimas transacciones, recomendaciones (reglas).
+- Cerrar sesión determinista (scope local, no se cuelga).
+- Cierre automático por inactividad (30 min) con aviso al volver.
+- Validación de sesión al cargar (si el token no sirve, manda a login en vez de mostrar $0).
+- Dashboard: métricas, gráfica de categorías, presupuesto (conectado a límites reales), últimas transacciones, recomendaciones (reglas).
 - Transacciones: alta con 50+ categorías + categoría personalizada.
-- Presupuesto: editable por categoría, guardado en la nube (columna `budgets` en `profiles`).
-- Tarjetas TC: guardado en la nube (tabla `tarjetas` con RLS).
-- Caché: usuarios reciben siempre la versión fresca (vercel.json no-store).
+- Presupuesto editable por categoría, guardado en la nube (columna `budgets` en `profiles`).
+- Tarjetas TC: bloqueada como función Premium (pantalla 🔒, badge "PRO"). Código real intacto detrás de la bandera `isPremium`.
+- Restablecer datos a 0 (Ajustes → Zona de peligro): borra transacciones + tarjetas + presupuestos.
+- Caché: 3 capas para que el usuario nunca vea versión vieja (ver sección 6).
+- Favicon (ícono de barras moradas).
 
 ---
 
-## 5. Estado de la base de datos (Supabase)
+## 5. Base de datos (Supabase) — RLS aplicado
 
-Tablas y seguridad RLS (cada usuario solo accede a lo suyo):
+- **transactions** — RLS activado, política `transactions_own` (`auth.uid() = user_id`). Columna `note`.
+- **tarjetas** — RLS activado, política `tarjetas_own` (`auth.uid() = user_id`).
+- **profiles** — RLS activado, política `profiles_own` (`auth.uid() = id`). Columna `budgets jsonb`.
 
-- **transactions** — RLS activado. Política `transactions_own` (`auth.uid() = user_id`). Tiene columna `note`.
-- **tarjetas** — creada con RLS. Política `tarjetas_own` (`auth.uid() = user_id`).
-- **profiles** — RLS activado. Política `profiles_own` (`auth.uid() = id`). Tiene columna `budgets jsonb` (presupuestos del usuario).
+SQL ya aplicado: ver historial; políticas `for all using (auth.uid()=user_id/id) with check (...)`.
 
-SQL de referencia ya aplicado:
-```sql
--- presupuestos
-alter table profiles add column if not exists budgets jsonb default '{}'::jsonb;
--- tabla tarjetas
-create table if not exists tarjetas(
-  id bigint generated always as identity primary key,
-  user_id uuid references auth.users(id) on delete cascade,
-  banco text, nombre text, digitos text,
-  limite numeric default 0, saldo numeric default 0, minimo numeric default 0,
-  dia_corte int, dia_pago int, tasa numeric, created_at timestamptz default now());
--- columna note en transactions
-alter table transactions add column if not exists note text;
--- RLS
-alter table transactions enable row level security;
-create policy "transactions_own" on transactions for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-alter table tarjetas enable row level security;
-create policy "tarjetas_own" on tarjetas for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-alter table profiles enable row level security;
-create policy "profiles_own" on profiles for all using (auth.uid()=id) with check (auth.uid()=id);
-```
+**Auditoría de seguridad RLS (29 may 2026) — APROBADA:**
+- RLS activado (`true`) en las 3 tablas.
+- Una sola política limpia por tabla (`profiles_own`, `tarjetas_own`, `transactions_own`), todas `ALL`, con lectura Y escritura correctas (sin NULL).
+- Se eliminaron 2 políticas duplicadas viejas ("Users see own profile", "Users see own transactions") que tenían `with_check` en NULL.
+- Verificado: cada usuario solo accede a sus propios datos. Modelo anon key pública + RLS estricto = correcto.
 
 ---
 
-## 6. Cambios hechos en la sesión del 28 may 2026
+## 6. Cambios hechos (mayo 2026)
 
-1. **Caché (versión vieja "pegada")** → `vercel.json` con `Cache-Control: no-store` en el HTML.
-2. **Auto-versionado** → la versión se lee del meta tag `app-version`; `actualizar.bat` inyecta `YYYYMMDDHHMMSS` con regex flexible y `git add -A`.
-3. **Mojibake (acentos/emojis)** → `actualizar.bat` lee y escribe en UTF-8 (`-Encoding UTF8`).
-4. **Cerrar sesión** → `doSignOut` usa `signOut({scope:'local'})` (sin red, no se cuelga) + marca `gs_logout` en sessionStorage + recarga forzada con parámetro cambiante a URL limpia. `start()` respeta la marca y fuerza login.
-5. **Presupuesto editable + nube** → página de presupuesto con inputs por categoría, agregar/quitar categorías, botón Guardar; funciones `loadBudgets`/`saveBudgets`; dashboard lee `userBudgets`.
-6. **Tabla `tarjetas`** → creada con RLS (antes daba 404).
-7. **RLS** → activado en `transactions`, `tarjetas` y `profiles`.
-8. **Sesión que caducaba (causa raíz de fallos fantasma)** → cambio de `flowType:'implicit'` a **`flowType:'pkce'`**: el token se renueva automáticamente. Antes la app se veía logueada pero el servidor ya no reconocía la sesión, lo que causaba: datos en $0, no guardar transacciones y logout colgado.
-
----
-
-## 7. Pendientes / próximos pasos
-
-- [ ] Favicon: la consola muestra `404 /favicon.ico` (cosmético). Agregar un ícono para quitarlo.
-- [ ] "Recomendaciones IA" del dashboard son reglas fijas, no IA real (mejora opcional).
-- [ ] Gráfica de líneas en Reportes usa datos de ejemplo hardcodeados (Ago–Ene). Conectar a datos reales si se desea.
-- [ ] Verificar de vez en cuando que la sesión PKCE se mantenga (no debería volver a caducar).
-
----
-
-## 8. Diagnóstico rápido (si algo falla)
-
-- **Datos en $0 / no guarda / logout colgado** → probable sesión inválida. Cerrar sesión y volver a entrar. Con PKCE debería ser raro.
-- **Versión vieja tras deploy** → confirmar que `vercel.json` está en el repo; Ctrl+Shift+R.
-- **Acentos/emojis rotos** → el `actualizar.bat` debe tener `-Encoding UTF8` en lectura y escritura.
-- **Error al guardar (rojo en consola)** → revisar pestaña Network → request a la tabla → Status (401/403 = sesión/RLS; 400/PGRST204 = columna faltante).
+1. Caché ("versión pegada") → `vercel.json`.
+2. Auto-versionado por meta tag + `actualizar.bat` con regex flexible y `git add -A`.
+3. Encoding UTF-8 en `actualizar.bat` (acentos/emojis).
+4. Cerrar sesión → `signOut({scope:'local'})` + marca `gs_logout` + recarga forzada a URL limpia.
+5. Presupuesto editable + guardado en la nube; dashboard usa `userBudgets`.
+6. Tabla `tarjetas` creada con RLS.
+7. RLS en transactions, tarjetas y profiles.
+8. Sesión que caducaba → `flowType:'pkce'` (auto-refresh del token).
+9. **Caché a prueba de usuarios no técnicos (3 capas):**
+   - `vercel.json` `source:"/(.*)"` con `Cache-Control: no-store, no-cache, must-revalidate, max-age=0`.
+   - Auto-actualización: la app consulta la versión del servidor (`fetch` no-store) al cargar, al volver a la app (`visibilitychange`) y cada 5 min; si hay versión nueva, recarga sola. Guard `gs_vcheck` evita bucles.
+   - El usuario final no borra nada.
+10. Validación de sesión al cargar con `getUser()` (evita estado "logueado pero muerto").
+11. Favicon (SVG inline).
+12. Restablecer datos a 0 (`resetAllData` en Ajustes).
+13. Tarjetas TC como Premium (`renderPremiumLock` + bandera `isPremium`).
+14. Cierre por inactividad (`IDLE_MINUTES=30`, listeners de actividad, aviso al volver) y redirect de Google a URL limpia.
+15. **Logout colgado SOLO con Google (causa raíz)** → `doSignOut` ya NO espera (`await`) la revocación de red de Supabase. Esa llamada se cuelga con sesiones OAuth de Google (con correo era rápida, por eso solo fallaba Google). Ahora dispara `signOut({scope:'local'})` sin esperar, borra el token local y recarga de inmediato. El logout ya no depende de la red.
 
 ---
 
-## 9. Prompt de continuación (pegar en una conversación nueva)
+## 7. Lección importante: migrar testers atascados
+
+**Causa:** usuarios que abrieron la app ANTES de los arreglos de caché tienen una versión vieja guardada en su navegador móvil. Esa versión no tiene la auto-actualización, así que no se arregla sola.
+
+**Punto clave (lo que pasó):** al mandar el link `?v=2` por WhatsApp, lo abrían en el **navegador interno de WhatsApp**, que es distinto del Chrome/Safari donde usan la app. Por eso "no funcionaba": arreglaban un navegador que no usaban.
+
+**Procedimiento para migrarlos (una sola vez):**
+1. Abrir su navegador real (Chrome/Safari), NO desde WhatsApp.
+2. Entrar a `gasto-smart-six.vercel.app` y recargar 2-3 veces.
+3. Si sigue viejo, borrar datos del sitio: Android (Chrome) → candado junto a la URL → Información del sitio → Borrar. iPhone (Safari) → Ajustes → Safari → Borrar historial y datos.
+
+**A futuro:** compartir el link normal; los usuarios nuevos reciben la versión con auto-actualización desde el inicio y nunca se atascan. No se puede automatizar el rescate de un cliente ya atascado desde el servidor (su código viejo no tiene la lógica nueva).
+
+> Verificado: NO hay Service Worker registrado ni Cache Storage (descartado como causa).
+
+---
+
+## 8. Pendientes / próximos pasos
+
+- [x] Verificación B: RLS aislando datos entre usuarios — CONFIRMADO en la práctica (cada cuenta ve solo lo suyo).
+- [x] Recomendaciones IA mejoradas (basadas en datos reales: tasa de ahorro, mayor gasto, presupuestos excedidos, comparación mes anterior, pagos de tarjeta próximos). Siguen siendo reglas, no IA generativa.
+- [x] Gráfica de Reportes (tendencia 6 meses) con datos reales vía `last6Months()`.
+- [x] Tarjetas TC reactivado para pruebas: `isPremium=true`. Para monetizar, cambiar a `false` (vuelve el bloqueo Premium).
+- [ ] (Futuro) IA generativa real (chat financiero) como función premium — requiere conectar un servicio de IA.
+- [ ] (Opcional) Service Worker si se va por el camino de PWA instalable.
+
+---
+
+## 9. Diagnóstico rápido (si algo falla)
+
+- **Datos en $0 / no guarda / logout colgado** → sesión inválida. Cerrar sesión y entrar de nuevo. Con PKCE + validación getUser debería ser raro.
+- **Versión vieja tras deploy** → confirmar `vercel.json` en el repo; en móvil, abrir en navegador real (no WhatsApp) y recargar; último recurso: borrar datos del sitio.
+- **Acentos/emojis rotos** → `actualizar.bat` debe leer y escribir con `-Encoding UTF8`.
+- **Error al guardar (rojo en consola)** → pestaña Network → request a la tabla → Status (401/403 = sesión/RLS; 400/PGRST204 = columna faltante).
+
+---
+
+## 10. Prompt de continuación (pegar en una conversación nueva)
 
 > Continuamos el proyecto GastoSmart — app de control de gastos personales.
-> App en producción: https://gasto-smart-six.vercel.app · GitHub: https://github.com/PEMOANG90/GastoSmart (privado) · Supabase URL: https://ekoojdgqizzdbcqkxgln.supabase.co
-> Stack: HTML + CSS + JS vanilla (todo inline en index.html) + Supabase + Chart.js + Vercel. Deploy: doble clic en actualizar.bat → GitHub → Vercel.
-> Estado: caché, deploy/encoding, cerrar sesión, presupuesto editable en la nube, tabla tarjetas, RLS en transactions/tarjetas/profiles, y sesión con PKCE (auto-refresh) ya están resueltos.
-> Pendientes menores: favicon, recomendaciones IA reales, gráfica de líneas con datos reales.
-> Adjunto mi index.html actual. Siguiente paso: [escribe aquí lo que quieres hacer].
+> App: https://gasto-smart-six.vercel.app · GitHub: https://github.com/PEMOANG90/GastoSmart (privado) · Supabase: https://ekoojdgqizzdbcqkxgln.supabase.co
+> Stack: HTML + CSS + JS vanilla (todo inline en index.html) + Supabase + Chart.js + Vercel. Deploy: actualizar.bat → GitHub → Vercel.
+> Resuelto: caché (3 capas), deploy/encoding, cerrar sesión, presupuesto editable en la nube, tabla tarjetas, RLS en las 3 tablas, sesión PKCE con validación, cierre por inactividad (30 min), TC como Premium, restablecer datos a 0, favicon.
+> Pendientes: verificar RLS con 2 cuentas, recomendaciones IA reales, gráfica de reportes con datos reales.
+> Adjunto mi index.html actual. Siguiente paso: [escribe lo que quieras hacer].
