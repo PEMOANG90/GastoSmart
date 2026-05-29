@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260528172942">
+<meta name="app-version" content="20260529085140">
 <title>GastoSmart 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c5cff'/><rect x='24' y='54' width='13' height='22' rx='3' fill='%23ffffff'/><rect x='44' y='40' width='13' height='36' rx='3' fill='%23ffffff'/><rect x='64' y='28' width='13' height='48' rx='3' fill='%23ffffff'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -45,6 +46,7 @@ body{display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
 .auth-msg{padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;display:none}
 .auth-msg.error{background:rgba(255,107,122,.1);border:1px solid rgba(255,107,122,.2);color:var(--red)}
 .auth-msg.success{background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.2);color:var(--green)}
+.auth-msg.info{background:rgba(124,92,255,.1);border:1px solid rgba(124,92,255,.25);color:#a78bfa}
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -267,7 +269,7 @@ select.field-input option{background:var(--surface2)}
       <button class="nav-btn" data-page="tarjetas" onclick="navigate('tarjetas')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="5" y1="15" x2="9" y2="15"/></svg>
         Tarjetas TC
-        <span class="nav-badge">NUEVO</span>
+        <span class="nav-badge" style="background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff">PRO</span>
       </button>
       <button class="nav-btn" data-page="ai" onclick="navigate('ai')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>
@@ -486,7 +488,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{
 }});
 
 // ─── STATE ──────────────────────────────────────────────
-let user=null,txs=[],tarjetas=[],page='dashboard',txType='gasto',editTcId=null,userBudgets={};
+let user=null,txs=[],tarjetas=[],page='dashboard',txType='gasto',editTcId=null,userBudgets={},isPremium=false;
 
 // ─── AUTH ────────────────────────────────────────────────
 let authMode='login';
@@ -531,20 +533,37 @@ async function doAuth(){
   btn.innerHTML=authMode==='login'?'Iniciar sesión':'Crear cuenta';btn.disabled=false;
 }
 async function doGoogle(){
-  const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
+  const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+window.location.pathname}});
   if(error)setMsg(error.message,'error');
 }
-async function doSignOut(){
+async function doSignOut(reason){
   // scope:'local' cierra la sesion al instante, sin llamada de red (no se cuelga)
   try{await sb.auth.signOut({scope:'local'})}catch(e){}
   try{localStorage.clear()}catch(e){}
   try{sessionStorage.clear()}catch(e){}
   // marca de logout: sobrevive la recarga y obliga a mostrar login
   try{sessionStorage.setItem('gs_logout','1')}catch(e){}
+  if(reason==='idle'){try{sessionStorage.setItem('gs_idle','1')}catch(e){}}
   user=null;txs=[];tarjetas=[];
   // Recarga forzada (parametro cambiante garantiza el reload) a URL limpia
   window.location.replace(window.location.origin+window.location.pathname+'?_out='+Date.now());
 }
+
+// ─── CIERRE AUTOMATICO POR INACTIVIDAD ────────────────────
+const IDLE_MINUTES=30;
+let idleTimer=null;
+function resetIdleTimer(){
+  if(!user)return;
+  clearTimeout(idleTimer);
+  idleTimer=setTimeout(idleLogout,IDLE_MINUTES*60*1000);
+}
+function idleLogout(){
+  if(!user)return;
+  doSignOut('idle');
+}
+['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(function(ev){
+  window.addEventListener(ev,resetIdleTimer,{passive:true});
+});
 
 // ─── INIT ────────────────────────────────────────────────
 async function initApp(){
@@ -561,6 +580,7 @@ async function initApp(){
     await loadTarjetas();
     navigate('dashboard');
   }catch(e){console.log('Error cargando datos:',e)}
+  resetIdleTimer();
 }
 async function ensureProfile(name){
   const{data}=await sb.from('profiles').select('id').eq('id',user.id).single();
@@ -629,13 +649,27 @@ async function start(){
   // Si venimos de cerrar sesion, forzar login y limpiar cualquier rastro
   if(sessionStorage.getItem('gs_logout')){
     sessionStorage.removeItem('gs_logout');
+    var byIdle=sessionStorage.getItem('gs_idle');
+    sessionStorage.removeItem('gs_idle');
     try{await sb.auth.signOut({scope:'local'})}catch(e){}
     history.replaceState(null,'',location.origin+location.pathname);
+    if(byIdle)setMsg('Tu sesión se cerró por inactividad. Inicia sesión de nuevo.','info');
     return;
   }
   try{
     const{data:{session}}=await sb.auth.getSession();
-    if(session?.user){user=session.user;await initApp();}
+    if(session?.user){
+      // Validar la sesion contra el servidor. Si el token ya no sirve,
+      // forzar login en vez de mostrar datos vacios ($0).
+      const{data:{user:u},error}=await sb.auth.getUser();
+      if(error||!u){
+        try{await sb.auth.signOut({scope:'local'})}catch(e){}
+        showLogin();
+        return;
+      }
+      user=u;
+      await initApp();
+    }
   }catch(e){}
 }
 function showLogin(){
@@ -974,7 +1008,23 @@ function renderReports(){
   </div>`;
 }
 
+function renderPremiumLock(titulo,desc){
+  return`
+  <div class="page-header">
+    <div>
+      <div class="page-title">${titulo}</div>
+      <div class="page-sub">Función exclusiva de Premium</div>
+    </div>
+  </div>
+  <div class="card" style="text-align:center;padding:48px 24px;max-width:520px;margin:0 auto">
+    <div style="font-size:48px;margin-bottom:12px">🔒</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px">Función Premium</div>
+    <div style="color:var(--muted);margin-bottom:24px;line-height:1.5">${desc}</div>
+    <button class="btn btn-primary" style="width:auto" onclick="navigate('premium')">⭐ Conocer Premium</button>
+  </div>`;
+}
 function renderTarjetas(){
+  if(!isPremium)return renderPremiumLock('Tarjetas de Crédito','Controla tus tarjetas, deudas, fechas de corte y de pago, y recibe alertas de vencimiento — todo en un solo lugar.');
   const totalDeuda=tarjetas.reduce((s,t)=>s+(t.saldo||0),0);
   const totalLimite=tarjetas.reduce((s,t)=>s+(t.limite||0),0);
   const util=totalLimite>0?Math.round((totalDeuda/totalLimite)*100):0;
@@ -1127,11 +1177,30 @@ function renderSettings(){
       <input class="field-input" value="${user?.email||''}" disabled style="opacity:.5">
       <button class="btn btn-primary btn-sm" style="width:auto" onclick="saveProfile()">Guardar cambios</button>
     </div>
-    <div class="card">
+    <div class="card" style="margin-bottom:12px">
       <div class="card-title">🚪 Sesión</div>
       <button class="btn" style="background:rgba(255,107,122,.12);border:1px solid rgba(255,107,122,.25);color:var(--red);width:auto;padding:8px 16px;font-size:13px;border-radius:9px" onclick="doSignOut()">Cerrar sesión</button>
     </div>
+    <div class="card" style="border:1px solid rgba(255,107,122,.3)">
+      <div class="card-title">⚠️ Zona de peligro</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:14px;line-height:1.5">Restablece tu cuenta a cero: elimina todas tus transacciones, tarjetas y presupuestos. Esta acción no se puede deshacer.</div>
+      <button class="btn" style="background:rgba(255,107,122,.12);border:1px solid rgba(255,107,122,.25);color:var(--red);width:auto;padding:8px 16px;font-size:13px;border-radius:9px" onclick="resetAllData()">Restablecer todos mis datos a 0</button>
+    </div>
   </div>`;
+}
+
+async function resetAllData(){
+  if(!confirm('⚠️ Esto eliminará TODAS tus transacciones, tarjetas y presupuestos de forma permanente.\n\n¿Deseas continuar?'))return;
+  if(!confirm('Última confirmación: esta acción NO se puede deshacer.\n\n¿Restablecer todo a cero?'))return;
+  try{
+    await sb.from('transactions').delete().eq('user_id',user.id);
+    await sb.from('tarjetas').delete().eq('user_id',user.id);
+    await sb.from('profiles').update({budgets:{}}).eq('id',user.id);
+  }catch(e){}
+  txs=[];tarjetas=[];userBudgets={...BUDGETS};
+  try{store.removeItem('gs_tarjetas');}catch(e){}
+  alert('✓ Tu cuenta fue restablecida a cero.');
+  navigate('dashboard');
 }
 
 async function saveProfile(){
