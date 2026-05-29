@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260529152659">
+<meta name="app-version" content="20260529163901">
 <title>GastoSmart 2026</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c5cff'/><rect x='24' y='54' width='13' height='22' rx='3' fill='%23ffffff'/><rect x='44' y='40' width='13' height='36' rx='3' fill='%23ffffff'/><rect x='64' y='28' width='13' height='48' rx='3' fill='%23ffffff'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -216,12 +216,21 @@ select.field-input option{background:var(--surface2)}
       <label>Contraseña</label>
       <input id="authPassword" type="password" placeholder="Mínimo 6 caracteres">
     </div>
+    <div class="field" id="consentField" style="display:none">
+      <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted)">
+        <input type="checkbox" id="authConsent" style="margin-top:3px;flex-shrink:0;cursor:pointer;width:16px;height:16px">
+        <span>He leído y acepto el <a onclick="openModal('legalModal')" style="color:var(--accent2);text-decoration:underline;cursor:pointer">Aviso de Privacidad y los Términos de Uso</a>.</span>
+      </div>
+    </div>
     <button class="btn btn-primary" id="authBtn" onclick="doAuth()">Iniciar sesión</button>
     <div class="auth-divider">o continúa con</div>
     <button class="btn btn-google" onclick="doGoogle()">
       <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
       Continuar con Google
     </button>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5">
+      Al continuar aceptas nuestro <a onclick="openModal('legalModal')" style="color:var(--accent2);cursor:pointer">Aviso de Privacidad y Términos</a>.
+    </div>
   </div>
 </div>
 
@@ -473,6 +482,37 @@ select.field-input option{background:var(--surface2)}
   </div>
 </div>
 
+<!-- Modal Legal: Aviso de Privacidad y Términos -->
+<div id="legalModal" class="modal-bg">
+  <div class="modal" style="max-width:640px;max-height:85vh;display:flex;flex-direction:column">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:18px;font-weight:700">Aviso de Privacidad y Términos</div>
+      <button class="btn btn-outline" style="width:auto;padding:6px 12px" onclick="closeModal('legalModal')">Cerrar</button>
+    </div>
+    <div style="overflow-y:auto;padding-right:6px;font-size:13px;line-height:1.6">
+      <h3 style="color:var(--accent2);margin:6px 0">Aviso de Privacidad</h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:10px">Última actualización: [FECHA]</p>
+      <p><strong>Responsable:</strong> [NOMBRE O RAZÓN SOCIAL DEL RESPONSABLE], responsable del tratamiento de tus datos personales en GastoSmart.</p>
+      <p><strong>Datos que recabamos:</strong> nombre, correo electrónico y la información financiera que tú registras (ingresos, gastos, categorías, presupuestos y datos de tarjetas: banco, nombre, últimos dígitos y fechas). No solicitamos ni almacenamos el número completo de tu tarjeta ni claves bancarias.</p>
+      <p><strong>Finalidad:</strong> usar tus datos únicamente para prestarte el servicio de registro y análisis de tus finanzas personales.</p>
+      <p><strong>Transferencias:</strong> tus datos se almacenan en servicios de infraestructura de terceros (Supabase y Vercel) que actúan como encargados. No vendemos ni compartimos tus datos con fines comerciales.</p>
+      <p><strong>Derechos ARCO:</strong> puedes Acceder, Rectificar, Cancelar u Oponerte al tratamiento de tus datos y revocar tu consentimiento escribiendo a [CORREO DE CONTACTO]. También puedes borrar tus datos desde Ajustes → "Restablecer todos mis datos".</p>
+      <p><strong>Seguridad:</strong> aplicamos control de acceso por usuario para proteger tu información. Ningún sistema es 100% infalible.</p>
+      <p><strong>Cambios:</strong> este aviso puede actualizarse; publicaremos la versión vigente en la app.</p>
+      <p style="margin-top:10px;padding:10px;background:rgba(245,158,11,.1);border-radius:8px;font-size:11px;color:#f59e0b"><strong>Nota:</strong> este texto es una plantilla de referencia y debe ser revisado y validado por un profesional legal antes de publicarse.</p>
+      <h3 style="color:var(--accent2);margin:18px 0 6px">Términos de Uso</h3>
+      <p><strong>1. El servicio.</strong> GastoSmart es una herramienta para registrar y visualizar tus finanzas personales. <strong>No constituye asesoría financiera, fiscal, contable ni de inversión.</strong> Las recomendaciones son informativas y se generan automáticamente.</p>
+      <p><strong>2. Tu cuenta.</strong> Eres responsable de la veracidad de los datos que ingresas y de la confidencialidad de tu contraseña.</p>
+      <p><strong>3. Uso aceptable.</strong> Te comprometes a no usar la app para fines ilícitos ni a vulnerar su seguridad o la de otros usuarios.</p>
+      <p><strong>4. Limitación de responsabilidad.</strong> La app se ofrece "tal cual". No garantizamos exactitud de cálculos ni disponibilidad continua, ni somos responsables por decisiones que tomes con base en la información mostrada.</p>
+      <p><strong>5. Disponibilidad y respaldo.</strong> El servicio puede tener interrupciones o cambios. No uses la app como único registro de datos críticos.</p>
+      <p><strong>6. Modificaciones.</strong> Podemos actualizar estos términos; el uso continuo implica su aceptación.</p>
+      <p><strong>7. Contacto.</strong> [CORREO DE CONTACTO].</p>
+      <p style="margin-top:10px;padding:10px;background:rgba(245,158,11,.1);border-radius:8px;font-size:11px;color:#f59e0b"><strong>Nota:</strong> revisar con un abogado antes de publicar.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── SUPABASE ───────────────────────────────────────────
 const SB_URL='https://ekoojdgqizzdbcqkxgln.supabase.co';
@@ -498,6 +538,7 @@ function switchTab(m){
   document.getElementById('tabRegister').classList.toggle('active',m==='register');
   document.getElementById('authBtn').textContent=m==='login'?'Iniciar sesión':'Crear cuenta';
   document.getElementById('nameField').style.display=m==='register'?'block':'none';
+  document.getElementById('consentField').style.display=m==='register'?'block':'none';
   setMsg('','');
 }
 function setMsg(text,type){
@@ -516,6 +557,7 @@ async function doAuth(){
   try{
     if(authMode==='register'){
       if(!name){setMsg('Ingresa tu nombre','error');btn.innerHTML='Crear cuenta';btn.disabled=false;return}
+      if(!document.getElementById('authConsent').checked){setMsg('Debes aceptar el Aviso de Privacidad y los Términos','error');btn.innerHTML='Crear cuenta';btn.disabled=false;return}
       const{error}=await sb.auth.signUp({email,password:pass,options:{data:{name}}});
       if(error)throw error;
       setMsg('¡Cuenta creada! Revisa tu correo para confirmar.','success');
@@ -784,13 +826,22 @@ function openTxModal(){
 }
 async function saveTx(){
   const desc=document.getElementById('txDesc').value.trim();
-  const amount=parseFloat(document.getElementById('txAmount').value);
+  let amount=parseFloat(document.getElementById('txAmount').value);
   const date=document.getElementById('txDate').value;
   const selCat=document.getElementById('txCat').value;
   const customCat=document.getElementById('customCat').value.trim();
   const category=selCat==='__custom__'&&customCat?customCat:selCat;
   const note=document.getElementById('txNote').value.trim();
-  if(!desc||!amount||!date){alert('Completa descripción, monto y fecha');return;}
+  // Validaciones
+  if(!desc||!date){alert('Completa descripción y fecha');return;}
+  if(desc.length>120){alert('La descripción es muy larga (máx. 120 caracteres)');return;}
+  if(!isFinite(amount)||amount<=0){alert('Ingresa un monto válido mayor a 0');return;}
+  if(amount>100000000){alert('El monto es demasiado grande');return;}
+  amount=Math.round(amount*100)/100;
+  if(category.length>60){alert('La categoría es muy larga (máx. 60 caracteres)');return;}
+  if(note.length>500){alert('La nota es muy larga (máx. 500 caracteres)');return;}
+  const dch=new Date(date+'T12:00:00');
+  if(isNaN(dch.getTime())||dch.getFullYear()<2000||dch.getFullYear()>2100){alert('La fecha no es válida');return;}
   const btn=event.target;btn.textContent='Guardando...';btn.disabled=true;
   const ok=await addTx({type:txType,description:desc,amount,category,date,note});
   btn.textContent='Guardar';btn.disabled=false;
@@ -811,16 +862,20 @@ async function saveTc(){
   const banco=document.getElementById('tcBanco').value;
   const nombre=document.getElementById('tcNombre').value.trim();
   if(!banco||!nombre){alert('Selecciona banco e ingresa un nombre');return;}
-  const tc={
-    banco,nombre,
-    digitos:document.getElementById('tcDigitos').value.trim(),
-    limite:parseFloat(document.getElementById('tcLimite').value)||0,
-    saldo:parseFloat(document.getElementById('tcSaldo').value)||0,
-    minimo:parseFloat(document.getElementById('tcMinimo').value)||0,
-    dia_corte:parseInt(document.getElementById('tcCorte').value)||null,
-    dia_pago:parseInt(document.getElementById('tcPago').value)||null,
-    tasa:parseFloat(document.getElementById('tcTasa').value)||null
-  };
+  if(nombre.length>60){alert('El nombre es muy largo (máx. 60 caracteres)');return;}
+  const digitos=document.getElementById('tcDigitos').value.trim();
+  if(digitos&&!/^\d{1,4}$/.test(digitos)){alert('Los dígitos deben ser hasta 4 números');return;}
+  const limite=parseFloat(document.getElementById('tcLimite').value)||0;
+  const saldo=parseFloat(document.getElementById('tcSaldo').value)||0;
+  const minimo=parseFloat(document.getElementById('tcMinimo').value)||0;
+  if([limite,saldo,minimo].some(v=>v<0||v>100000000)){alert('Los montos deben ser positivos y razonables');return;}
+  const corte=parseInt(document.getElementById('tcCorte').value)||null;
+  const pago=parseInt(document.getElementById('tcPago').value)||null;
+  if(corte&&(corte<1||corte>31)){alert('El día de corte debe ser entre 1 y 31');return;}
+  if(pago&&(pago<1||pago>31)){alert('El día de pago debe ser entre 1 y 31');return;}
+  const tasa=parseFloat(document.getElementById('tcTasa').value)||null;
+  if(tasa!==null&&(tasa<0||tasa>200)){alert('La tasa debe estar entre 0 y 200%');return;}
+  const tc={banco,nombre,digitos,limite,saldo,minimo,dia_corte:corte,dia_pago:pago,tasa};
   if(editTcId){tc.id=editTcId;await updateTarjeta(tc);}
   else await addTarjeta(tc);
   closeModal('tcModal');navigate('tarjetas');
@@ -1189,6 +1244,10 @@ function renderSettings(){
       <label class="field-label">Email</label>
       <input class="field-input" value="${user?.email||''}" disabled style="opacity:.5">
       <button class="btn btn-primary btn-sm" style="width:auto" onclick="saveProfile()">Guardar cambios</button>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">📄 Legal</div>
+      <a onclick="openModal('legalModal')" style="color:var(--accent2);cursor:pointer;font-size:13px;text-decoration:underline">Aviso de Privacidad y Términos de Uso</a>
     </div>
     <div class="card" style="margin-bottom:12px">
       <div class="card-title">🚪 Sesión</div>

@@ -63,6 +63,11 @@ SQL ya aplicado: ver historial; políticas `for all using (auth.uid()=user_id/id
 - Se eliminaron 2 políticas duplicadas viejas ("Users see own profile", "Users see own transactions") que tenían `with_check` en NULL.
 - Verificado: cada usuario solo accede a sus propios datos. Modelo anon key pública + RLS estricto = correcto.
 
+**Otros chequeos de seguridad (29 may 2026):**
+- Confirmación de correo (Authentication → Sign In/Providers → Email → "Confirm email"): **ON** ✅. Nadie puede registrarse con un correo ajeno. Anonymous sign-ins OFF, manual linking OFF.
+- Validación de datos reforzada en `saveTx` y `saveTc`: monto > 0 y con tope, longitudes máximas de texto, fecha válida, dígitos de tarjeta numéricos (máx 4), día corte/pago 1–31, tasa 0–200%.
+- Pendiente: respaldo de datos (plan FREE, sin respaldos automáticos completos). Hacer respaldo manual o subir a Pro al monetizar. Revisar Attack Protection y Rate Limits (defaults de Supabase).
+
 ---
 
 ## 6. Cambios hechos (mayo 2026)
@@ -113,6 +118,15 @@ SQL ya aplicado: ver historial; políticas `for all using (auth.uid()=user_id/id
 - [x] Tarjetas TC reactivado para pruebas: `isPremium=true`. Para monetizar, cambiar a `false` (vuelve el bloqueo Premium).
 - [ ] (Futuro) IA generativa real (chat financiero) como función premium — requiere conectar un servicio de IA.
 - [ ] (Opcional) Service Worker si se va por el camino de PWA instalable.
+- [ ] **Completar textos legales** (campos `[ ]` en el modal legal): `[NOMBRE/RAZÓN SOCIAL DEL RESPONSABLE]`, `[CORREO DE CONTACTO]`, `[FECHA]`. Y que un ABOGADO revise/valide el texto antes de abrir al público.
+- [ ] Respaldo de datos (plan FREE): respaldo manual o subir a Pro al monetizar.
+
+## Estructura legal en la app (29 may 2026)
+- Modal `legalModal` con Aviso de Privacidad + Términos de Uso (texto base/borrador con placeholders, marcado con nota de "revisar con abogado").
+- Casilla obligatoria de aceptación (`authConsent`) en el registro por correo: sin marcarla no se crea la cuenta.
+- Nota de aceptación junto al botón de Google (OAuth no pasa por la casilla).
+- Enlace a los documentos en Ajustes → "📄 Legal".
+- Validación de datos reforzada en saveTx/saveTc (ya descrita arriba).
 
 ---
 
