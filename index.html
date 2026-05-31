@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260529164503">
+<meta name="app-version" content="20260530180512">
 <title>GastoSmart 2026</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c5cff'/><rect x='24' y='54' width='13' height='22' rx='3' fill='%23ffffff'/><rect x='44' y='40' width='13' height='36' rx='3' fill='%23ffffff'/><rect x='64' y='28' width='13' height='48' rx='3' fill='%23ffffff'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -722,8 +722,26 @@ function showLogin(){
 
 // ─── TRANSACTIONS ────────────────────────────────────────
 async function addTx(tx){
-  const{data,error}=await sb.from('transactions').insert({...tx,user_id:user.id}).select().single();
-  if(!error&&data){txs.unshift(data);return true;}return false;
+  try{
+    let{data,error}=await sb.from('transactions').insert({...tx,user_id:user.id}).select().single();
+    if(error){
+      const m=(error.message||'').toLowerCase();
+      // Si parece sesión expirada (común con Google en móvil), refresca y reintenta una vez
+      if(m.includes('jwt')||m.includes('token')||m.includes('expired')||error.code==='PGRST301'||m.includes('row-level')||m.includes('permission')){
+        try{await sb.auth.refreshSession();}catch(e){}
+        try{
+          const{data:{session}}=await sb.auth.getSession();
+          if(session&&session.user){
+            user=session.user;
+            ({data,error}=await sb.from('transactions').insert({...tx,user_id:user.id}).select().single());
+          }
+        }catch(e){}
+      }
+    }
+    if(error)return{ok:false,error};
+    if(data){txs.unshift(data);return{ok:true};}
+    return{ok:false,error:{message:'El servidor no respondió'}};
+  }catch(e){return{ok:false,error:e};}
 }
 async function delTx(id){
   const{error}=await sb.from('transactions').delete().eq('id',id).eq('user_id',user.id);
@@ -843,10 +861,15 @@ async function saveTx(){
   const dch=new Date(date+'T12:00:00');
   if(isNaN(dch.getTime())||dch.getFullYear()<2000||dch.getFullYear()>2100){alert('La fecha no es válida');return;}
   const btn=event.target;btn.textContent='Guardando...';btn.disabled=true;
-  const ok=await addTx({type:txType,description:desc,amount,category,date,note});
+  const res=await addTx({type:txType,description:desc,amount,category,date,note});
   btn.textContent='Guardar';btn.disabled=false;
-  if(ok){closeModal('txModal');navigate(page);}
-  else alert('Error al guardar. Intenta de nuevo.');
+  if(res&&res.ok){closeModal('txModal');navigate(page);return;}
+  const msg=(res&&res.error&&(res.error.message||res.error.error_description))||'error desconocido';
+  if(/jwt|token|expired|sesi|row-level|permission|not authenticated|401|403/i.test(msg)){
+    alert('Tu sesión expiró (suele pasar al entrar con Google en el móvil).\n\nCierra sesión y vuelve a entrar; luego guarda de nuevo.');
+  }else{
+    alert('No se pudo guardar.\n\nDetalle: '+msg);
+  }
 }
 window.delTxHandler=async id=>{if(!confirm('¿Eliminar transacción?'))return;await delTx(id);navigate(page);};
 
@@ -1367,6 +1390,14 @@ function afterRender(p){
   start();
   // Auto-actualización: si el servidor tiene una versión más nueva que la que
   // está corriendo (HTML cacheado), recarga fresco SOLA. El usuario no hace nada.
+  function appBusy(){
+    try{
+      if(document.querySelector('.modal-bg.open'))return true;
+      var el=document.activeElement;
+      if(el&&(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT'))return true;
+    }catch(e){}
+    return false;
+  }
   async function checkForUpdate(){
     try{
       var res = await fetch(location.pathname+'?cb='+Date.now(), {cache:'no-store'});
@@ -1374,7 +1405,7 @@ function afterRender(p){
       var m = html.match(/name="app-version" content="(\d+)"/);
       var serverV = m ? m[1] : null;
       var tried = sessionStorage.getItem('gs_vcheck');
-      if(serverV && serverV !== BUILD && tried !== serverV){
+      if(serverV && serverV !== BUILD && tried !== serverV && !appBusy()){
         sessionStorage.setItem('gs_vcheck', serverV);
         location.replace(location.pathname+'?v='+serverV);
       }
