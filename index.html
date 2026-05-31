@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c18">
-<meta name="app-version" content="20260530180512">
+<meta name="app-version" content="20260530181625">
 <title>GastoSmart 2026</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c5cff'/><rect x='24' y='54' width='13' height='22' rx='3' fill='%23ffffff'/><rect x='44' y='40' width='13' height='36' rx='3' fill='%23ffffff'/><rect x='64' y='28' width='13' height='48' rx='3' fill='%23ffffff'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -524,7 +524,8 @@ const store=isEdge?sessionStorage:localStorage;
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{
   storage:store,storageKey:'gs_auth',
   flowType:'pkce',detectSessionInUrl:true,
-  persistSession:!isEdge,autoRefreshToken:true
+  persistSession:!isEdge,autoRefreshToken:true,
+  lock:async(name,acquireTimeout,fn)=>{return await fn();}
 }});
 
 // ─── STATE ──────────────────────────────────────────────
@@ -721,19 +722,22 @@ function showLogin(){
 }
 
 // ─── TRANSACTIONS ────────────────────────────────────────
+function withTimeout(promise,ms,label){
+  return Promise.race([promise,new Promise((_,rej)=>setTimeout(()=>rej(new Error((label||'La operación')+' tardó demasiado. Si tienes varias pestañas de GastoSmart abiertas, cierra las demás; o cierra sesión y vuelve a entrar.')),ms))]);
+}
 async function addTx(tx){
   try{
-    let{data,error}=await sb.from('transactions').insert({...tx,user_id:user.id}).select().single();
+    let{data,error}=await withTimeout(sb.from('transactions').insert({...tx,user_id:user.id}).select().single(),12000,'Guardar');
     if(error){
       const m=(error.message||'').toLowerCase();
       // Si parece sesión expirada (común con Google en móvil), refresca y reintenta una vez
       if(m.includes('jwt')||m.includes('token')||m.includes('expired')||error.code==='PGRST301'||m.includes('row-level')||m.includes('permission')){
-        try{await sb.auth.refreshSession();}catch(e){}
+        try{await withTimeout(sb.auth.refreshSession(),8000,'Renovar sesión');}catch(e){}
         try{
           const{data:{session}}=await sb.auth.getSession();
           if(session&&session.user){
             user=session.user;
-            ({data,error}=await sb.from('transactions').insert({...tx,user_id:user.id}).select().single());
+            ({data,error}=await withTimeout(sb.from('transactions').insert({...tx,user_id:user.id}).select().single(),12000,'Guardar'));
           }
         }catch(e){}
       }
