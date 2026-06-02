@@ -35,7 +35,7 @@ HTML + CSS + JavaScript vanilla (todo inline en `index.html`) · Supabase (auth 
 
 ## 4. Lo que funciona
 
-- Login email/contraseña y Google OAuth (flujo PKCE, sesión se renueva sola).
+- Login email/contraseña y Google OAuth (flujo IMPLÍCITO, sesión se renueva sola). NOTA: se migró de PKCE a implícito (ver abajo).
 - Cerrar sesión determinista (scope local, no se cuelga).
 - Cierre automático por inactividad (30 min) con aviso al volver.
 - Validación de sesión al cargar (si el token no sirve, manda a login en vez de mostrar $0).
@@ -91,6 +91,14 @@ SQL ya aplicado: ver historial; políticas `for all using (auth.uid()=user_id/id
 14. Cierre por inactividad (`IDLE_MINUTES=30`, listeners de actividad, aviso al volver) y redirect de Google a URL limpia.
 15. **Logout colgado SOLO con Google (causa raíz)** → `doSignOut` ya NO espera (`await`) la revocación de red de Supabase. Esa llamada se cuelga con sesiones OAuth de Google (con correo era rápida, por eso solo fallaba Google). Ahora dispara `signOut({scope:'local'})` sin esperar, borra el token local y recarga de inmediato. El logout ya no depende de la red.
 
+16. **Google en móvil/escritorio no guardaba / se quedaba en "Guardando..." / datos a $0 (causa raíz, 30 may 2026)** — Diagnóstico: con varias pestañas abiertas y en móvil, el flujo PKCE fallaba: (a) el candado entre pestañas de Supabase (`navigator.locks`) se trababa y colgaba el guardado; (b) el `?code=` de Google no se canjeaba (el `code_verifier` de PKCE se perdía/pisaba entre pestañas), dejando la sesión inválida → el insert lo rechazaba el RLS → "sesión expiró". Arreglos aplicados:
+    - `lock:async(name,acquireTimeout,fn)=>await fn()` en la config auth → quita el candado que se trababa entre pestañas.
+    - `withTimeout()` en `addTx` (12s) → guardar nunca se cuelga eternamente; muestra error claro.
+    - `addTx` ahora refresca sesión y reintenta una vez si el error es de auth; `saveTx` muestra el error real.
+    - `appBusy()` en `checkForUpdate` → la auto-recarga NUNCA recarga si hay modal abierto o input enfocado (evitaba el "se reinicia a cero" de Android).
+    - **CAMBIO CLAVE: `flowType:'pkce'` → `'implicit'`** (con `detectSessionInUrl:true`). El modo implícito devuelve la sesión directo de Google (sin `code_verifier` frágil), ideal para SPA sin backend. Se quitó el canje manual `exchangeCodeForSession`. CONFIRMADO funcionando: ingreso de $17,000 guardado, URL limpia, sin cuelgues.
+    - Para usuarios con sesión rota de pruebas previas: limpiar datos del sitio una vez (candado → datos del sitio → borrar). Los datos en la nube NO se pierden.
+
 ---
 
 ## 7. Lección importante: migrar testers atascados
@@ -127,6 +135,12 @@ SQL ya aplicado: ver historial; políticas `for all using (auth.uid()=user_id/id
 - Nota de aceptación junto al botón de Google (OAuth no pasa por la casilla).
 - Enlace a los documentos en Ajustes → "📄 Legal".
 - Validación de datos reforzada en saveTx/saveTc (ya descrita arriba).
+
+### Refuerzo legal (30 may 2026)
+- Aviso de Privacidad actualizado a la NUEVA Ley Federal de Protección de Datos (en vigor 21 mar 2025). Autoridad ya NO es INAI sino la Secretaría Anticorrupción y Buen Gobierno (Dir. Gral. de Datos Personales en el Sector Privado). Agregada cláusula de "decisiones automatizadas" (por la IA) con derecho de oposición; consentimiento "libre, específico e informado".
+- Términos de Uso reforzados: recuadro destacado "NO es asesoría financiera" (menciona Asistente IA y Recomendaciones IA explícitamente); limitación de responsabilidad amplia; sin garantías; indemnización; ley aplicable (México).
+- Énfasis IA visible en pantalla (no solo en términos): nota bajo "Recomendaciones IA" (dashboard), bajo recomendaciones del Asistente IA, y en subtítulo de página Asistente IA.
+- PENDIENTE: llenar placeholders `[NOMBRE/RAZÓN SOCIAL]`, `[DOMICILIO]`, `[CORREO DE CONTACTO]`, `[FECHA]`; y validación final por ABOGADO antes de publicar. Definir persona física vs moral (afecta responsabilidad patrimonial) con abogado/contador.
 
 ---
 
